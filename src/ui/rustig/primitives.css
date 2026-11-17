@@ -1,0 +1,1850 @@
+/*
+ * Rustig shared primitives. Foundation-owned, frozen after the foundation: area packages consume these through
+ * `src/ui/rz.tsx` and never restyle a primitive globally. Need a variation? Use a modifier that exists, one of
+ * the `--rz-*` hooks, or build it under your own `rz-<area>` block and log it in your promote note.
+ *
+ * Values are lifted from the prototypes in design_handoff_benchdesk_rustig (D/<file>:<line>).
+ * Naming: block `rz-x`, element `rz-x__el`, modifier `rz-x--mod`. State comes from attributes the markup
+ * already has: [aria-selected] [aria-pressed] [aria-checked] [aria-current] [data-done] [data-late] [data-tone].
+ * Unlayered: beats every element rule in `@layer base` (base.css). No `!important`, no legacy class names.
+ */
+
+/* ---- Content column + scroller (D/Project:60-62, D/Projecten:60-61, D/Vandaag:60-62) ---- */
+.rz-main {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+}
+.rz-scroll {
+  overflow-y: auto;
+  min-width: 0;
+  min-height: 0;
+}
+.rz-page {
+  /* Positioned so an absolutely positioned `.rz-sr` span (a sr-only "Deadline verlopen" in a row) has its
+     containing block INSIDE the scroller; against `.rz-main` every such span below the fold would add
+     scrollable overflow to the wrong box. */
+  position: relative;
+  width: 100%;
+  max-width: var(--rz-page-w, var(--page-w));
+  margin: 0 auto;
+  padding: 56px 24px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.rz-page--wide {
+  --rz-page-w: var(--page-w-wide); /* tables: Projecten, Accounts */
+}
+.rz-page--composer {
+  padding-bottom: 32px; /* a composer is docked below: Project */
+  gap: 36px;
+}
+.rz-page--today {
+  --rz-page-w: 760px;
+  padding-top: 64px;
+  padding-bottom: 32px;
+  gap: 44px;
+}
+
+/* ---- Page head (D/Projecten:62-65, D/Project:63-77) ---- */
+.rz-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.rz-head__text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.rz-head__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.rz-head__meta {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+.rz-head__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.rz-h1 {
+  margin: 0;
+  font-size: var(--fs-h1);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  color: var(--text);
+}
+.rz-h1--sentence {
+  letter-spacing: -0.02em; /* D/Vandaag:66 */
+  line-height: 1.2;
+  text-wrap: balance;
+}
+.rz-h1--review {
+  font-size: var(--fs-title); /* D/Beoordelen:65 */
+  line-height: 1.35;
+  text-wrap: balance;
+}
+.rz-crumbs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+.rz-crumbs__link {
+  color: inherit;
+  text-decoration: none;
+}
+.rz-crumbs__link:hover {
+  color: var(--text);
+  opacity: 1;
+}
+.rz-lead {
+  font-size: var(--fs-body);
+  color: var(--text2);
+  line-height: 1.55;
+  max-width: 600px;
+  text-wrap: pretty;
+}
+.rz-metaline {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+
+/* ---- Section + label (D/Vandaag:90-91,103,114; D/Projecten:68-69; D/Accounts:68-69) ---- */
+.rz-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.rz-section--tight {
+  gap: 4px;
+}
+.rz-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 28px;
+  padding: 0 12px;
+  font-size: var(--fs-meta);
+  font-weight: 400;
+  color: var(--muted);
+}
+.rz-label--split {
+  justify-content: space-between;
+}
+.rz-label--tall {
+  height: 32px;
+}
+.rz-label__name {
+  font-weight: 600;
+  color: var(--text2);
+}
+.rz-colhead {
+  display: grid;
+  gap: 16px;
+  align-items: center;
+  height: 24px;
+  padding: 0 12px;
+  font-size: var(--fs-col);
+  color: var(--muted);
+}
+
+/* ---- Row: no borders, no separators, fill on hover only (D/Vandaag:93,105,116; D/Project:85; D/Projecten:72) ---- */
+.rz-row {
+  display: grid;
+  grid-template-columns: var(--rz-row-cols, 28px minmax(0, 1fr) auto);
+  gap: var(--rz-row-gap, 14px);
+  align-items: center;
+  min-height: var(--rz-row-h, 52px);
+  padding: var(--rz-row-py, 8px) 12px;
+  border-radius: var(--r-row);
+  width: 100%;
+  text-align: left;
+  text-decoration: none;
+  color: var(--text);
+  cursor: pointer;
+}
+.rz-row:hover {
+  background: var(--row);
+  opacity: 1;
+}
+.rz-row[aria-selected="true"] {
+  background: var(--row);
+}
+.rz-row--static {
+  cursor: default;
+}
+/* A static row does nothing on click, so it takes no hover fill either (Profiel: assistants, MCPs, skills). */
+.rz-row--static:hover {
+  background: none;
+}
+.rz-row--lg {
+  --rz-row-h: 60px; /* Wacht op jou, Accounts */
+  --rz-row-py: 10px;
+}
+.rz-row--md {
+  --rz-row-h: 56px; /* Verdergaan */
+}
+.rz-row--task {
+  --rz-row-h: 50px; /* Project list */
+  --rz-row-py: 6px;
+}
+.rz-row--sm {
+  --rz-row-h: 44px; /* goal projects, files */
+  --rz-row-py: 6px;
+  --rz-row-gap: 12px;
+  border-radius: 12px;
+}
+.rz-row--xs {
+  --rz-row-h: 34px; /* wizard criteria D/NieuweTaak:39 */
+  --rz-row-py: 4px;
+  --rz-row-gap: 10px;
+  padding-inline: 8px;
+  border-radius: 10px;
+}
+.rz-row[data-done] {
+  opacity: 0.55;
+}
+.rz-row[data-done] .rz-row__title {
+  text-decoration: line-through;
+}
+.rz-row__text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.rz-row__title {
+  font-size: var(--fs-body);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rz-row__title--wrap {
+  white-space: normal;
+  text-wrap: pretty;
+}
+.rz-row__meta {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rz-row__end {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.rz-due[data-late] {
+  color: var(--warn);
+}
+
+/* ---- Check: circle 20px (D/Vandaag:117), 18px (D/Project:86); square 18px r6 (D/Beoordelen:73), 15px r5 (D/NieuweTaak:39) ---- */
+.rz-check {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  border-radius: 50%;
+}
+.rz-check__box {
+  width: var(--rz-check, 20px);
+  height: var(--rz-check, 20px);
+  border-radius: var(--rz-check-r, 50%);
+  border: 1.5px solid var(--muted);
+  display: grid;
+  place-items: center;
+  color: var(--on-accent);
+}
+.rz-check__box svg {
+  width: 11px;
+  height: 11px;
+  stroke-width: 3;
+  opacity: 0;
+}
+.rz-check[aria-checked="true"] .rz-check__box {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.rz-check[aria-checked="true"] .rz-check__box svg {
+  opacity: 1;
+}
+.rz-check--sm {
+  --rz-check: 18px;
+}
+.rz-check--square {
+  --rz-check: 18px;
+  --rz-check-r: 6px;
+  border-radius: 8px;
+}
+.rz-check--xs {
+  --rz-check: 15px;
+  --rz-check-r: 5px;
+  width: 20px;
+  height: 20px;
+}
+.rz-check--dashed .rz-check__box {
+  border: 1.5px dashed var(--line);
+}
+.rz-radio {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid var(--muted);
+  display: grid;
+  place-items: center;
+  color: var(--on-accent);
+  flex: none;
+}
+[aria-checked="true"] > .rz-radio,
+.rz-radio[data-on] {
+  background: var(--accent); /* D/NieuweTaak:54 */
+  border-color: var(--accent);
+}
+
+/* ---- Text tabs (D/Project:81 + script `const tabs`) ---- */
+.rz-tabbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.rz-tabs {
+  display: flex;
+  gap: 18px;
+  border-bottom: 1px solid var(--line2);
+  min-width: 0;
+}
+.rz-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.rz-tab:hover {
+  color: var(--text);
+}
+.rz-tab[aria-selected="true"],
+.rz-tab[aria-pressed="true"],
+.rz-tab[aria-current="true"] {
+  color: var(--text);
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+.rz-tab__count {
+  font-size: var(--fs-meta);
+  font-weight: 400;
+  color: var(--muted);
+}
+.rz-tabs--bar {
+  gap: 0; /* canvas company filter D/Werkplek:84 */
+  border: 0;
+}
+.rz-tabs--bar .rz-tab {
+  height: 56px;
+  padding: 0 4px;
+  margin-right: 14px;
+  gap: 8px;
+}
+.rz-texttabs {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: var(--fs-meta); /* Leesweergave | Bron D/Beoordelen:101-103 */
+}
+.rz-texttab {
+  color: var(--muted);
+}
+.rz-texttab:hover {
+  color: var(--text);
+}
+.rz-texttab[aria-selected="true"],
+.rz-texttab[aria-pressed="true"] {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* ---- View switch: list / board icons, no fill (D/Project:81) ---- */
+.rz-viewswitch {
+  display: flex;
+  gap: 2px;
+  flex: none;
+}
+.rz-viewswitch .rz-iconbtn {
+  color: var(--muted);
+}
+.rz-viewswitch .rz-iconbtn:hover {
+  background: none;
+  color: var(--text);
+}
+.rz-viewswitch .rz-iconbtn[aria-pressed="true"] {
+  color: var(--text);
+}
+
+/* ---- Pill buttons (D/Project:69, D/Projecten:64, D/Vandaag:96, D/Accounts:81, D/Werkplek:154) ---- */
+.rz-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 14px;
+  border-radius: var(--r-pill);
+  font-size: var(--fs-body);
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  color: var(--text);
+  flex: none;
+}
+.rz-btn--primary {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.rz-btn--primary:hover {
+  opacity: 0.85;
+}
+/* README "Secundair"; the screen texts of the README call the same pill "ghost". Both names work. */
+.rz-btn--secondary,
+.rz-btn--ghost {
+  border: 1px solid var(--line);
+  color: var(--text);
+}
+.rz-btn--secondary:hover,
+.rz-btn--ghost:hover {
+  background: var(--row);
+  opacity: 1;
+}
+.rz-btn--quiet {
+  color: var(--text2); /* borderless third level (extrapolated) */
+}
+.rz-btn--quiet:hover {
+  background: var(--row);
+  color: var(--text);
+  opacity: 1;
+}
+.rz-btn--sm {
+  height: 28px; /* "Inloggen" D/Accounts:81 */
+  padding: 0 12px;
+}
+.rz-btn--row {
+  height: 34px; /* "Beoordelen" in a row D/Vandaag:96 */
+  padding: 0 16px;
+}
+.rz-btn--lg {
+  height: 38px; /* empty canvas D/Werkplek:154 */
+  padding: 0 18px;
+}
+.rz-btn:disabled {
+  opacity: 0.35;
+  background-color: transparent;
+  cursor: default;
+}
+.rz-btn--primary:disabled {
+  background-color: var(--accent);
+}
+.rz-btn__spark {
+  color: var(--accent); /* "✦ Bijwerken met assistent" D/JeBedrijf:64 */
+}
+.rz-link {
+  font-size: var(--fs-body);
+  color: var(--text2); /* "← Terug" D/NieuweTaak:68 */
+  text-decoration: none;
+}
+.rz-link:hover {
+  color: var(--text);
+  opacity: 1;
+}
+/* Unlayered, so the hover above would beat base.css `button:disabled { opacity: .35 }`: a disabled text action
+   must stay quiet under the pointer (Suggesties while generating, "Verwijderen" in the Editor). */
+.rz-link:disabled,
+.rz-link:disabled:hover {
+  opacity: 0.35;
+  cursor: default;
+}
+.rz-link--accent {
+  color: var(
+    --accent
+  ); /* "Check-in doen →", "Hervatten →", "Als taak", "Toevoegen" */
+  font-weight: 500;
+}
+.rz-link--accent:hover {
+  color: var(--accent);
+  opacity: 0.8;
+}
+.rz-link--meta {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+
+/* ---- Icon button 30px r8 (D/Werkplek:107; 32px D/Project:68; 28px D/Werkplek:23; 22px D/Vandaag:38) ---- */
+.rz-iconbtn {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--r-icon);
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  flex: none;
+}
+.rz-iconbtn:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+.rz-iconbtn--lg {
+  width: 32px;
+  height: 32px;
+}
+.rz-iconbtn--sm {
+  width: 28px;
+  height: 28px;
+}
+.rz-iconbtn--xs {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+}
+.rz-iconbtn--side {
+  color: var(--text2); /* sidebar header icons D/Vandaag:26 */
+}
+.rz-iconbtn--round {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: var(--text2); /* composer "+" D/Vandaag:130 */
+}
+.rz-iconbtn:disabled {
+  background: none;
+  color: var(--muted);
+}
+.rz-toolbtn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: var(--r-icon);
+  font-size: var(--fs-meta);
+  color: var(--muted); /* Ernaast / Eronder D/Werkplek:89-90 */
+  white-space: nowrap;
+}
+.rz-toolbtn:hover {
+  color: var(--text);
+}
+
+/* ---- Status: 6px dot + 11.5px --text2 (README "Status", D/Vandaag:108, D/Projecten:75) ---- */
+.rz-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--rz-tone, var(--muted));
+  flex: none;
+}
+.rz-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--rz-status-fs, var(--fs-meta));
+  color: var(--text2);
+  white-space: nowrap;
+}
+.rz-status--12 {
+  --rz-status-fs: var(--fs-body); /* Vandaag "Verdergaan", pane header */
+}
+.rz-status--accent {
+  color: var(--accent); /* "● Actief" D/Project:74 */
+  font-weight: 500;
+}
+[data-tone="accent"] {
+  --rz-tone: var(--accent);
+}
+[data-tone="blue"] {
+  --rz-tone: var(--blue);
+}
+[data-tone="warn"] {
+  --rz-tone: var(--warn);
+}
+[data-tone="muted"] {
+  --rz-tone: var(--muted);
+}
+[data-tone="danger"] {
+  --rz-tone: var(--danger);
+}
+[data-tone="text2"] {
+  --rz-tone: var(--text2);
+}
+
+/* ---- Avatar (round: people, assistants) and badge (square: company, project). Tint via style={{"--tint": …}} ---- */
+.rz-avatar {
+  width: var(--rz-av, 28px);
+  height: var(--rz-av, 28px);
+  border-radius: 50%;
+  background: var(--tint, var(--tint-user));
+  color: #fff;
+  font-size: var(--rz-av-fs, 10px);
+  font-weight: 600;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.rz-avatar--30 {
+  --rz-av: 30px; /* D/NieuweTaak:52 */
+  font-weight: 700;
+}
+.rz-avatar--22 {
+  --rz-av: 22px; /* D/Beoordelen:66 */
+  --rz-av-fs: 8px;
+  font-weight: 700;
+}
+.rz-avatar--18 {
+  --rz-av: 18px; /* composer chip D/Vandaag:132, Accounts group D/Accounts:68 */
+  --rz-av-fs: 7.5px;
+  font-weight: 700;
+}
+.rz-avatar[data-provider="codex"] {
+  --tint: var(--tint-codex);
+}
+.rz-avatar[data-provider="claude"] {
+  --tint: var(--tint-claude);
+}
+.rz-avatar[data-provider="shell"],
+.rz-avatar[data-provider="human"] {
+  --tint: var(--tint-user);
+}
+.rz-badge {
+  width: var(--rz-bd, 20px);
+  height: var(--rz-bd, 20px);
+  border-radius: var(--rz-bd-r, 6px);
+  background: var(--tint, var(--accent));
+  color: #fff;
+  font-size: var(--rz-bd-fs, 9px);
+  font-weight: 700;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.rz-badge--26 {
+  --rz-bd: 26px; /* D/Project:66 */
+  --rz-bd-r: 7px;
+  --rz-bd-fs: 10px;
+}
+.rz-badge--24 {
+  --rz-bd: 24px; /* D/Projecten:73 */
+  --rz-bd-r: 7px;
+}
+.rz-badge--22 {
+  --rz-bd: 22px; /* D/JeBedrijf:85 */
+}
+.rz-badge--18 {
+  --rz-bd: 18px; /* D/Werkplek:85 */
+  --rz-bd-r: 5px;
+}
+.rz-badge--14 {
+  --rz-bd: 14px; /* D/NieuweTaak:31 */
+  --rz-bd-r: 4px;
+  --rz-bd-fs: 7px;
+}
+.rz-tile {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: var(--bubble); /* file icon D/Beoordelen:86 */
+  display: grid;
+  place-items: center;
+  color: var(--text2);
+  flex: none;
+}
+
+/* ---- Progress bar 3px (D/Vandaag:73, D/Project:76, D/Accounts:76). Width via style={{"--pct": "42%"}} ---- */
+.rz-bar {
+  display: block;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--line);
+  overflow: hidden;
+}
+.rz-bar > i {
+  display: block;
+  height: 100%;
+  width: var(--pct, 0%);
+  border-radius: 2px;
+  background: var(--rz-tone, var(--accent));
+}
+.rz-bar--mini {
+  display: inline-block;
+  width: 56px;
+  vertical-align: middle;
+}
+.rz-meter {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.rz-meter__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+.rz-meter--usage {
+  gap: 3px;
+}
+.rz-meter--usage .rz-meter__top {
+  font-size: var(--fs-col);
+}
+.rz-meter__value {
+  color: var(--rz-tone, var(--muted));
+  font-weight: 500;
+}
+
+/* ---- Card (D/Vandaag:70-86, D/JeBedrijf:72-79, D/Projecten:84, D/Project:99). No fill at rest. ---- */
+.rz-cards {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(var(--rz-card-min, 200px), 1fr)
+  );
+  gap: 12px;
+}
+.rz-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 18px 16px;
+  border-radius: var(--r-card);
+  border: 1px solid var(--line);
+  text-align: left;
+  text-decoration: none;
+  color: var(--text);
+  min-width: 0;
+}
+a.rz-card:hover,
+button.rz-card:hover {
+  background: var(--row);
+  opacity: 1;
+}
+.rz-card[aria-selected="true"],
+.rz-card[aria-pressed="true"] {
+  border-color: var(--text2);
+}
+.rz-card--project {
+  gap: 12px;
+  padding: 16px;
+}
+.rz-card--board {
+  gap: 8px;
+  padding: 12px;
+  border-radius: 12px;
+}
+.rz-card--dashed {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 120px;
+  border-style: dashed;
+  color: var(--muted);
+  font-size: var(--fs-body);
+}
+.rz-card--dashed:hover {
+  color: var(--text);
+  background: var(--row);
+}
+.rz-card__label {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+.rz-card__label strong {
+  color: var(--accent); /* "Belangrijkste doel" D/JeBedrijf:73 */
+  font-weight: 600;
+}
+.rz-figure {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.rz-figure__big {
+  font-size: var(--fs-title);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.rz-figure__unit {
+  font-size: var(--fs-body);
+  color: var(--text2);
+}
+.rz-choice {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--line); /* executor rows D/NieuweTaak:51 */
+  text-align: left;
+  width: 100%;
+}
+.rz-choice:hover {
+  background: var(--row);
+}
+.rz-choice:disabled:hover {
+  background: none;
+}
+/* Selected = border only, never a fill (D/NieuweTaak:229). Rows that must stay <button>s (the smoke presses
+   button "Codex") carry aria-pressed instead of role=radio + aria-checked; both read the same. */
+.rz-choice[aria-checked="true"],
+.rz-choice[aria-pressed="true"] {
+  border-color: var(--text2);
+}
+/* The 9px check inside the row's radio (D/NieuweTaak:54) shows only for the selected row. */
+.rz-choice .rz-radio svg {
+  width: 9px;
+  height: 9px;
+  opacity: 0;
+}
+.rz-choice[aria-pressed="true"] .rz-radio {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.rz-choice[aria-checked="true"] .rz-radio svg,
+.rz-choice[aria-pressed="true"] .rz-radio svg,
+.rz-choice .rz-radio[data-on] svg {
+  opacity: 1;
+}
+/* Dashed add row under a list (D/JeBedrijf:87): "Project koppelen", "Bedrijf toevoegen". Colour only on hover. */
+.rz-addrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 12px;
+  font-size: var(--fs-body);
+  color: var(--muted);
+  text-align: left;
+}
+.rz-addrow:hover {
+  color: var(--text);
+}
+.rz-addrow__box {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1.5px dashed var(--line);
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.rz-addrow__box svg {
+  stroke-width: 2.6;
+}
+.rz-inset {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--side); /* account block D/NieuweTaak:59 */
+}
+
+/* ---- Chip (D/Vandaag:131-132 composer; D/NieuweTaak:31-33,60,67; D/Accounts:82; D/Beoordelen:75) ---- */
+.rz-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 30px;
+  padding: 0 12px 0 10px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line);
+  font-size: var(--fs-meta);
+  color: var(--text);
+  min-width: 0;
+  white-space: nowrap;
+}
+.rz-chip:hover {
+  background: var(--row);
+}
+.rz-chip > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rz-chip--dashed {
+  border-style: dashed; /* "Deadline" D/NieuweTaak:33 */
+  color: var(--muted);
+  padding: 0 12px;
+}
+.rz-chip--dashed:hover {
+  color: var(--text);
+}
+.rz-chip--sm {
+  height: 28px;
+  padding: 0 10px;
+  gap: 6px;
+  max-width: 150px; /* company chip D/Accounts:82 */
+}
+.rz-chip--onside {
+  background: var(
+    --bg
+  ); /* on a --side / --row surface D/NieuweTaak:60, D/Accounts:82 */
+}
+.rz-chip--quiet {
+  height: 32px; /* composer chips: no border at rest */
+  border-color: transparent;
+  font-size: var(--fs-body);
+  color: var(--text2);
+}
+.rz-chip--quiet:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+.rz-chip--toggle {
+  height: 28px; /* "Krijgt mee" D/NieuweTaak:67 */
+  padding: 0 12px;
+  gap: 6px;
+  color: var(--text2);
+}
+.rz-chip--toggle svg {
+  opacity: 0;
+}
+.rz-chip--toggle[aria-pressed="true"] {
+  background: var(--hover);
+  border-color: transparent;
+  color: var(--text);
+}
+.rz-chip--toggle[aria-pressed="true"] svg {
+  opacity: 1;
+}
+/* "r. 12" D/Beoordelen:75. `.rz-kbd` is the only visible <kbd> (shortcut sheet); base.css hides plain <kbd>. */
+.rz-chip--mono,
+.rz-kbd {
+  display: inline-flex;
+  align-items: center;
+  height: auto;
+  padding: 3px 7px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: var(--fs-col);
+  color: var(--muted);
+}
+/* Explicit, because a <kbd> has no element rule of its own any more (the pre-Rustig `kbd {line-height:1.3}`
+   used to reach it through the cascade): 22px keys in the 32px shortcut rows. */
+.rz-kbd {
+  line-height: 1.3;
+  white-space: nowrap;
+}
+.rz-chip--mono:hover {
+  color: var(--text);
+  background: none;
+}
+
+/* ---- Fields (D/NieuweTaak:29,35,41; D/Beoordelen:78; D/JeBedrijf:111). Full box, so no element rule leaks in. ---- */
+.rz-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  font-size: var(--fs-meta);
+  font-weight: 400;
+  color: var(--muted);
+}
+.rz-field__label {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+.rz-input,
+.rz-textarea,
+.rz-select {
+  font: inherit;
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 10px 14px;
+  background: var(--bg);
+  color: var(--text);
+  outline: 0;
+  width: 100%;
+  min-width: 0;
+  box-shadow: none;
+  caret-color: var(--text);
+}
+.rz-input,
+.rz-select {
+  height: 36px;
+  padding-block: 0;
+}
+.rz-textarea {
+  resize: vertical;
+}
+.rz-textarea--sm {
+  border-radius: 12px; /* D/Beoordelen:78, D/JeBedrijf:111 */
+  padding: 8px 12px;
+  line-height: 1.5;
+}
+.rz-input:focus,
+.rz-textarea:focus,
+.rz-select:focus {
+  border-color: var(--text2);
+}
+.rz-input--bare {
+  border: 0;
+  border-radius: 0;
+  height: auto;
+  padding: 0;
+  background: transparent;
+}
+.rz-input--title {
+  font-size: var(--fs-title); /* D/NieuweTaak:29 */
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.rz-hint {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  text-wrap: pretty;
+}
+.rz-error {
+  font-size: var(--fs-meta);
+  color: var(--warn);
+}
+.rz-error--block {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--warn-tint);
+}
+.rz-deflist {
+  display: grid;
+  grid-template-columns: var(--rz-dl, 110px) minmax(0, 1fr); /* Profiel 110px, Check-ins 76px */
+  gap: 16px;
+  align-items: start;
+  padding: 12px;
+  margin: 0;
+  border-radius: var(--r-row);
+}
+.rz-deflist__k {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  padding-top: 3px;
+}
+.rz-deflist__v {
+  margin: 0;
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  text-wrap: pretty;
+  max-width: 600px;
+}
+
+/* ---- Composer r26 + shadow (D/Vandaag:126-137); single line (D/Werkplek:129-134) ---- */
+.rz-composer-dock {
+  padding: 8px 24px 22px;
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+.rz-composer-dock--pane {
+  padding: 8px 22px 18px;
+}
+.rz-composer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 760px;
+  padding: 14px 12px 10px 18px;
+  border-radius: var(--r-composer);
+  border: 1px solid var(--line);
+  background: var(--bg);
+  box-shadow: var(--shadow-composer);
+}
+.rz-composer__input {
+  font: inherit;
+  font-size: var(
+    --rz-composer-fs,
+    12px
+  ); /* prototypes 12px; README says 15px: one-line flip */
+  border: 0;
+  outline: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--text);
+  padding: 2px 0;
+  width: 100%;
+  min-width: 0;
+  resize: none;
+}
+.rz-composer__tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.rz-composer__grow {
+  flex: 1;
+}
+.rz-composer__hint {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+.rz-send {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  color: var(--on-accent);
+  flex: none;
+}
+.rz-send:hover {
+  opacity: 0.85;
+}
+.rz-send:disabled,
+.rz-send[data-empty] {
+  opacity: 0.35;
+}
+.rz-composer--line {
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  max-width: 720px;
+  min-height: 48px;
+  padding: 0 8px;
+  border-radius: var(--r-pill);
+  box-shadow: var(--shadow-composer-sm);
+}
+.rz-composer--line .rz-composer__input {
+  flex: 1;
+  height: 44px;
+  padding: 0 6px;
+}
+.rz-composer--line .rz-send {
+  width: 32px;
+  height: 32px;
+}
+
+/* ---- Modal r20 + overlay (D/NieuweTaak:21-26,28,43; D/Werkplek:21-25,36). Default: the OVERLAY scrolls. ---- */
+.rz-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: var(--overlay);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 64px 24px;
+  overflow: auto;
+}
+.rz-modal {
+  width: 100%;
+  max-width: var(--rz-modal-w, 600px);
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: var(--r-modal);
+  box-shadow: var(--shadow-modal);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.rz-modal--sm {
+  --rz-modal-w: 480px;
+}
+.rz-modal--notes {
+  --rz-modal-w: 640px;
+}
+.rz-modal--wide {
+  --rz-modal-w: 760px;
+}
+.rz-modal--file {
+  --rz-modal-w: 880px;
+  height: 80vh;
+}
+/* scroll="body": long forms keep head + footer in view, only the body scrolls (decision C4). */
+.rz-modal--scroll-body {
+  max-height: calc(100vh - 128px);
+}
+.rz-modal--scroll-body .rz-modal__body {
+  overflow-y: auto;
+  min-height: 0;
+}
+.rz-modal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 22px 0;
+  min-width: 0;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  flex: none;
+}
+.rz-modal__body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 14px 22px 22px;
+  min-width: 0;
+}
+.rz-modal__title {
+  margin: 0;
+  font-size: var(--fs-title);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  color: var(--text);
+}
+.rz-modal__summary {
+  font-size: var(--fs-lead);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+  text-wrap: pretty;
+}
+.rz-modal__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line2);
+  flex-wrap: wrap;
+}
+.rz-modal__foot--docked {
+  padding: 12px 22px 18px; /* footer outside the scrolling body (scroll="body") */
+  flex: none;
+}
+.rz-modal__foot-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.rz-steps {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+.rz-steps > [aria-current="step"] {
+  color: var(--text);
+  font-weight: 600;
+}
+.rz-steps__sep {
+  width: 14px;
+  height: 1px;
+  background: var(--line);
+}
+
+/* ---- Toast (D/Werkplek:147). Centred in the content column: the shell sets --rz-toast-shift to half the
+        sidebar width while the sidebar is open, and a page with a docked composer lifts --rz-toast-bottom. ---- */
+.rz-toast {
+  position: fixed;
+  left: calc(50% + var(--rz-toast-shift, 0px));
+  bottom: var(--rz-toast-bottom, 24px);
+  transform: translateX(-50%);
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  padding: 0 16px;
+  border-radius: var(--r-pill);
+  background: var(--btn);
+  color: var(--btn-text);
+  font-size: var(--fs-body);
+  box-shadow: var(--shadow-toast);
+  white-space: nowrap;
+  /* Shrink-to-fit would cap the width at the room RIGHT of the 50% anchor (≈ half the window); max-content
+     keeps the text on one line and lets --wrap use its full max-width. */
+  width: max-content;
+  max-width: min(700px, 90vw);
+}
+.rz-toast--in-canvas {
+  position: absolute;
+  left: 50%;
+  z-index: 5;
+}
+.rz-toast--wrap {
+  white-space: normal; /* long error messages (extrapolated) */
+  padding-block: 9px;
+  border-radius: 18px;
+}
+.rz-toast .rz-iconbtn {
+  color: inherit;
+  opacity: 0.7;
+}
+.rz-toast .rz-iconbtn:hover {
+  background: none;
+  opacity: 1;
+}
+
+/* ---- Menu / popover. Not in the design (prototype chips just cycle): sidebar item D/Vandaag:45 + card radius.
+        Every menu floats (`rz-menu--float`, positioned by rz.tsx from the trigger's rect). ---- */
+.rz-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 60;
+  min-width: 180px;
+  max-width: min(320px, 90vw);
+  padding: 6px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow-menu);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.rz-menu--wide {
+  min-width: 280px;
+  max-width: min(360px, 90vw);
+}
+.rz-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 34px;
+  padding: 0 10px;
+  border-radius: 10px;
+  font-size: var(--fs-body);
+  color: var(--text);
+  width: 100%;
+  text-align: left;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.rz-menu__item:hover,
+.rz-menu__item[data-active] {
+  background: var(--hover);
+  opacity: 1;
+}
+.rz-menu__item[aria-checked="true"] {
+  font-weight: 600;
+}
+.rz-menu__item--warn {
+  color: var(--warn);
+}
+.rz-menu__sep {
+  height: 1px;
+  margin: 5px 4px;
+  background: var(--line2);
+  flex: none;
+}
+.rz-menu__label {
+  height: 26px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+
+/* ---- Sidebar nav item (D/Vandaag:35,40,45,49) — consumed by shell.css ---- */
+.rz-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: var(--rz-nav-h, 38px);
+  padding: 0 10px;
+  border-radius: 10px;
+  font-size: var(--fs-body);
+  color: var(--text);
+  text-decoration: none;
+  text-align: left;
+  width: 100%;
+  min-width: 0;
+}
+.rz-nav:hover {
+  background: var(--hover);
+  opacity: 1;
+}
+.rz-nav[aria-current="page"] {
+  background: var(--hover);
+}
+.rz-nav[aria-current="page"] > svg:first-child {
+  color: var(--accent);
+}
+.rz-nav--project {
+  --rz-nav-h: 36px;
+}
+.rz-nav--foot {
+  --rz-nav-h: 36px;
+  color: var(--text2);
+}
+.rz-nav--foot:hover {
+  color: var(--text);
+}
+.rz-nav__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.rz-nav__count {
+  margin-left: auto;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Empty state (D/Werkplek:150-155) ---- */
+.rz-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  text-align: center;
+  max-width: 420px;
+  margin: auto;
+  padding: 32px;
+}
+.rz-empty--inline {
+  align-items: flex-start; /* an empty list inside a section: quiet line, no centring */
+  gap: 6px;
+  text-align: left;
+  max-width: none;
+  margin: 0;
+  padding: 8px 12px;
+}
+.rz-empty__title {
+  font-size: var(--fs-title);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.rz-empty__text {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+/* ---- Terminal surface (D/Werkplek:112). Re-scopes --muted on purpose. Never force line-height on xterm. ---- */
+.rz-term {
+  background: var(--term-bg);
+  color: var(--term-fg);
+  border-top: 1px solid var(--term-line);
+  border-bottom: 1px solid var(--term-line);
+  padding: 14px 22px 16px;
+  font-family: var(--mono);
+  font-size: var(--fs-meta);
+  line-height: 1.7;
+  --muted: var(--term-muted);
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ==== F3: what the React primitives in rz.tsx / TaskComposer.tsx / TaskCheck.tsx add on top of the F1 blocks ==== */
+
+/* PageShell: fills the legacy flex .main as well as a grid cell; hosts the "Zijbalk tonen" button (wired by F4). */
+.rz-main {
+  position: relative;
+  flex: 1 1 auto;
+}
+.rz-main__side-toggle {
+  position: absolute;
+  top: var(--rz-side-toggle-top, 12px);
+  left: var(
+    --rz-side-toggle-left,
+    12px
+  ); /* mac + closed sidebar: shell sets 84px to clear the traffic lights */
+  z-index: 2;
+}
+.rz-page--full {
+  --rz-page-w: none;
+}
+
+/* PageHead: crumbs / eyebrow / title row / lead / meta line stack at 10px (D/Project:63, D/Vandaag:64) */
+.rz-headblock {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.rz-crumbs__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.rz-crumbs__link {
+  font-size: inherit;
+}
+
+/* SectionLabel */
+.rz-label__text {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.rz-label__right {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  white-space: nowrap;
+}
+
+/* Row / Card selection without borrowing aria-selected (only valid inside listbox, grid, tablist) */
+.rz-row[data-selected],
+.rz-row[aria-pressed="true"] {
+  background: var(--row);
+}
+.rz-card[data-selected] {
+  border-color: var(--text2);
+}
+
+/* ViewSwitch: right-aligned in a .rz-tabbar and in any plain flex row */
+.rz-viewswitch {
+  margin-left: auto;
+}
+
+/* TextButton */
+.rz-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+/* Check: a real checkbox under the drawn box, or an action button (TaskCheck) */
+.rz-check {
+  position: relative;
+  cursor: pointer;
+}
+.rz-check__input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  flex: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  opacity: 0;
+  appearance: none;
+  cursor: pointer;
+}
+/* The drawn box never takes the click from the real checkbox under it: its unchecked glyph (opacity 0) and the
+   disabled box (opacity .35) are stacking contexts that paint ABOVE the positioned input, so a click (and
+   Playwright's `.check()`) would land on the box. Inside `as="button"` the click falls through to the button. */
+.rz-check__box {
+  pointer-events: none;
+}
+.rz-check__input:disabled,
+button.rz-check:disabled {
+  cursor: default;
+}
+.rz-check__input:checked + .rz-check__box,
+.rz-check[data-checked] .rz-check__box {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.rz-check__input:checked + .rz-check__box svg,
+.rz-check[data-checked] .rz-check__box svg {
+  opacity: 1;
+}
+.rz-check__input:disabled + .rz-check__box {
+  opacity: 0.35;
+}
+.rz-check__input:focus-visible + .rz-check__box {
+  outline: 2px solid color-mix(in srgb, var(--text) 40%, transparent);
+  outline-offset: 2px;
+}
+.rz-check--square .rz-check__box svg {
+  width: 10px; /* D/Beoordelen:73 */
+  height: 10px;
+}
+.rz-check--xs .rz-check__box svg {
+  width: 9px;
+  height: 9px;
+}
+
+/* Chip: static (no action), and the overlaid native control (select / date) */
+.rz-chip--static,
+.rz-chip--static:hover {
+  background: transparent;
+  cursor: default;
+}
+.rz-chip--onside.rz-chip--static:hover {
+  background: var(--bg);
+}
+.rz-chip--quiet.rz-chip--static:hover {
+  color: var(--text2);
+}
+.rz-chip--dashed.rz-chip--static:hover {
+  color: var(--muted);
+}
+.rz-chip__chevron {
+  color: var(--muted);
+}
+.rz-chip--control {
+  position: relative;
+  cursor: pointer;
+}
+.rz-chip--control:focus-within {
+  outline: 2px solid color-mix(in srgb, var(--text) 40%, transparent);
+  outline-offset: 2px;
+}
+.rz-chip__control {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+.rz-chip__control > * {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  appearance: none;
+  cursor: pointer;
+}
+
+/* Menu: portal + fixed position (top / left come inline from the trigger rect) */
+.rz-menu--float {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: auto;
+  bottom: auto;
+  max-height: calc(100vh - 16px);
+  overflow-y: auto;
+  -webkit-app-region: no-drag;
+}
+.rz-menu--float:focus-visible {
+  outline: 0; /* F4: a menu without choices takes the focus itself (Esc / Tab), without a ring */
+}
+.rz-menu__item {
+  flex: none;
+}
+.rz-menu__item:focus-visible {
+  outline: 0;
+  background: var(--hover);
+}
+.rz-menu__item[aria-disabled="true"],
+.rz-menu__item[aria-disabled="true"]:hover {
+  background: transparent;
+  color: var(--muted);
+  cursor: default;
+}
+.rz-menu__check {
+  width: 14px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  color: var(--text);
+}
+.rz-menu__text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rz-menu__hint {
+  font-size: var(--fs-meta);
+  font-weight: 400;
+  color: var(--muted);
+}
+.rz-menu__item--foot {
+  color: var(--text2);
+}
+
+/* Modal: title block, close button, and the two shapes existing content comes in (a <form>, or loose blocks) */
+.rz-overlay {
+  -webkit-app-region: no-drag;
+}
+.rz-modal__titles {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.rz-modal__subtitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rz-modal__head > .rz-iconbtn {
+  margin-left: auto;
+  align-self: flex-start;
+}
+.rz-modal > form {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+.rz-modal__foot > .rz-hint:empty {
+  display: none;
+}
+.rz-modal__foot > .rz-hint:empty + .rz-modal__foot-actions {
+  margin-left: auto;
+}
+.rz-steps__step {
+  font-size: inherit;
+  color: inherit;
+}
+.rz-steps__step:hover:not(:disabled) {
+  color: var(--text);
+}
+.rz-steps__step:disabled {
+  opacity: 1;
+}
+
+/* Toast */
+.rz-toast {
+  -webkit-app-region: no-drag;
+}
+.rz-toast > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Empty */
+.rz-empty__icon {
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+}
+.rz-empty--inline .rz-empty__title {
+  font-size: var(--fs-body);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+/* TaskComposer (D/Vandaag:126-137, D/NieuweTaak:181-191) */
+.rz-send svg {
+  stroke-width: 2.4;
+}
+.rz-composer__files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.rz-composer__file {
+  padding-right: 3px;
+  max-width: 220px;
+}
+.rz-composer__hint {
+  white-space: nowrap;
+}
+.rz-composer[data-busy] .rz-composer__input {
+  color: var(--muted);
+}
+
+/* ---- Disclosure: a <details> whose <summary> reads as a quiet meta line with an 11px chevron that turns open.
+        Not in the design; shared by "Wacht op andere taken", "Prioriteit en overige opties", Uitvoeringsgeschiedenis,
+        Taakinfo (Laatste resultaat / Voortgang) and the Computer modal. Hosts add their own size / inset. ---- */
+.rz-disclosure {
+  min-width: 0;
+}
+.rz-disclosure > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  cursor: pointer;
+  list-style: none;
+}
+.rz-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+.rz-disclosure > summary:hover {
+  color: var(--text);
+}
+.rz-disclosure[open] > summary > svg {
+  transform: rotate(90deg);
+}
+
+/* ---- Utilities (keep this list closed) ---- */
+.rz-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.rz-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.rz-num {
+  font-variant-numeric: tabular-nums;
+}
+.rz-mono {
+  font-family: var(--mono);
+}
+.rz-drag {
+  -webkit-app-region: drag;
+}
+.rz-nodrag {
+  -webkit-app-region: no-drag;
+}
+/* The one moving thing in the app: a progress indicator (app loading, Terugkerend refresh), never decoration.
+   base.css stills it under prefers-reduced-motion. */
+.rz-spin {
+  animation: rz-spin 1s linear infinite;
+}
+@keyframes rz-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,0 +1,257 @@
+/*
+ * Rustig area css: proposals
+ * Prioriteitsvoorstel page + banner.
+ * Block prefix(es): rz-proposals. EVERY selector in this file starts with one of them, so the import order in
+ * index.css never matters. Shared look comes from primitives.css (via src/ui/rz.tsx): never restyle an
+ * `rz-` primitive globally from here, never use a legacy class name, never write `!important`.
+ * This file has exactly one owner package; index.css already imports it.
+ *
+ * No prototype exists for this page (README "Niet in scope … bouw die in dezelfde stijl"): values are lifted from
+ * the patterns they copy (D/<file>:<line>). `.rz-proposals` sits on the PageShell column (880px for priorities).
+ */
+
+/* ---- Head: the assistant's summary keeps its paragraphs; stale = one quiet warn line, no box ---- */
+.rz-proposals__summary {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.rz-proposals__stale {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: var(--fs-body);
+  color: var(--warn);
+}
+
+/* ---- Priorities: changes left, the resulting order right; stacked below 1100px (README "Responsief") ---- */
+.rz-proposals__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 240px;
+  gap: 32px;
+  align-items: start;
+}
+.rz-proposals__changes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+/* Card (D/Vandaag:70): radius 16, 1px --line, no fill, no hover (it is not clickable as a whole).
+   The gutter is a FIXED 56px so the titles line up across cards (each card is its own grid). "12 → 10" is ~50px;
+   a three-digit pair ("100 → 100", ~65px, only with 100+ open tasks) runs into the 14px gap instead of widening it. */
+.rz-proposals__change {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  column-gap: 14px;
+  row-gap: 12px;
+  align-items: start;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  min-width: 0;
+}
+.rz-proposals__change[data-decision] {
+  opacity: 0.55; /* decided = the "afgerond" treatment (README "Status") */
+}
+/* "3 → 1": neutral on purpose, status colours are reserved (README "Groen alleen op handelingen") */
+.rz-proposals__move {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 18px; /* = the title line, so the numbers sit on its baseline */
+  font-family: var(--mono);
+  font-size: var(--fs-meta);
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.rz-proposals__move strong {
+  font-weight: 600;
+  color: var(--text);
+}
+.rz-proposals__body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.rz-proposals__title {
+  margin: 0;
+  font-size: var(--fs-body);
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--text);
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+}
+.rz-proposals__text {
+  margin: 0;
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  color: var(--text2);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.rz-proposals__caption {
+  margin: 0;
+  font-size: var(--fs-meta);
+  font-weight: 400;
+  color: var(--muted);
+}
+/* Source chips: pill 22px, 1px --line, 11px --muted; a long source ellipsises (full text in the tooltip) */
+.rz-proposals__sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+  min-width: 0;
+}
+.rz-proposals__source {
+  max-width: 100%;
+  height: 22px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  font-size: var(--fs-col);
+  line-height: 20px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* Under the text (other-pages.md §1.6 has them in a third column; see promote §3): primary pill + "Nee" text action */
+.rz-proposals__actions {
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+}
+/* Takes over the focus of the button it replaces (tabindex -1), so it gets the global :focus-visible ring */
+.rz-proposals__decided {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 4px;
+  font-size: var(--fs-meta);
+  color: var(--text2);
+}
+.rz-proposals__decided svg {
+  color: var(--accent); /* afgevinkt = accent */
+}
+
+/* "Nieuwe volgorde": rows 32px r10, moved tasks get the --row fill + weight 500 (no colour) */
+.rz-proposals__aside {
+  min-width: 0;
+}
+.rz-proposals__order {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rz-proposals__order-row {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 10px;
+  font-size: var(--fs-body);
+}
+.rz-proposals__order-row[data-changed] {
+  background: var(--row);
+  font-weight: 500;
+}
+.rz-proposals__rank {
+  font-size: var(--fs-meta);
+  font-weight: 400;
+  color: var(--muted);
+}
+.rz-proposals__order-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- Task proposals: `Card` from rz.tsx; the meta line and the "Klaar als" block are local ---- */
+/* Not `rz-card__label`: that one is a flex row, whose bare text child cannot break a long project name */
+.rz-proposals__meta {
+  min-width: 0;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.rz-proposals__done {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+/* ---- Context proposal: key | Nu | Voorgesteld (D/JeBedrijf:109-112 with a second value column) ---- */
+.rz-proposals__field {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  padding: 12px;
+  border-radius: var(--r-row);
+}
+.rz-proposals__key {
+  margin: 0;
+  font-size: var(--fs-meta);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.rz-proposals__value {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.rz-proposals__value .rz-proposals__text {
+  color: var(--text);
+  text-wrap: pretty;
+}
+.rz-proposals__value[data-current] .rz-proposals__text {
+  color: var(--muted);
+}
+.rz-proposals__value--wide {
+  grid-column: 2 / -1;
+}
+
+/* ---- Footer (§1.6: padding-top 12, 1px --line2; pills like D/Beoordelen:90-91), the question to the assistant on the right ---- */
+.rz-proposals__foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 12px;
+  border-top: 1px solid var(--line2);
+}
+.rz-proposals__clarify {
+  margin-left: auto;
+}
+
+@media (max-width: 1099px) {
+  .rz-proposals__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 759px) {
+  .rz-proposals__field {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+  .rz-proposals__value--wide {
+    grid-column: auto;
+  }
+}

@@ -1,0 +1,87 @@
+/*
+ * Rustig area css: computer
+ * Computer control toggle + modal.
+ * Block prefix(es): rz-computer. EVERY selector in this file starts with one of them, so the import order in
+ * index.css never matters. Shared look comes from primitives.css (via src/ui/rz.tsx): never restyle an
+ * `rz-` primitive globally from here, never use a legacy class name, never write `!important`.
+ * This file has exactly one owner package; index.css already imports it.
+ *
+ * Not drawn in the design (README "Niet in scope … bouw die in dezelfde stijl"); values from other-pages.md 1.15.
+ * The toggle is a plain rz IconButton, the frame is the default rz Modal (600px, title 18/500, subtitle 11.5 muted).
+ */
+.rz-computer {
+  gap: 16px;
+}
+.rz-computer__text,
+.rz-computer__hint {
+  margin: 0;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+.rz-computer__text {
+  font-size: var(--fs-body);
+  color: var(--text2);
+}
+.rz-computer__hint {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+
+/* Status list: two rows without a box (other-pages.md 1.15: padding 8/12, r14): name + status (dot, 11.5px) left,
+   action right. The rows overhang the body's 22px padding by their own 12px inset, so the text stays on the
+   modal's text column. */
+.rz-computer__list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0 -12px;
+}
+.rz-computer__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 14px;
+}
+.rz-computer__label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  min-width: 0;
+}
+.rz-computer__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--fs-body);
+  font-weight: 500;
+}
+
+/* Ready block: neutral, no accent fill ("groen alleen op handelingen") */
+.rz-computer__ready {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--side);
+}
+.rz-computer__ready strong {
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--text);
+}
+.rz-computer__ready span {
+  font-size: var(--fs-meta);
+  line-height: 1.5;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* Jargon and version numbers live behind a quiet disclosure (README "Copy-regels"); the look is `rz-disclosure`. */
+.rz-computer__details > p {
+  margin-top: 6px;
+}

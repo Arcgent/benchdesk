@@ -1,0 +1,165 @@
+/*
+ * Rustig area css: projects
+ * Projecten overview: departments, list + cards.
+ * Block prefix(es): rz-projects. EVERY selector in this file starts with one of them, so it cannot leak into
+ * another area. Rows are configured through the `.rz-row` hooks (`--rz-row-cols`, `--rz-row-h`), which do not
+ * depend on import order. `.rz-projects__cards` and `__label` sit on the same element as `.rz-cards` /
+ * `.rz-label`, which offer no hook, and win by source order only (index.css imports area files after
+ * primitives.css). Shared look comes from primitives.css (via src/ui/rz.tsx): never restyle an `rz-` primitive
+ * globally, never use a legacy class name, never write `!important`.
+ * This file has exactly one owner package; index.css already imports it.
+ *
+ * Values: design_handoff_benchdesk_rustig/Projecten Rustig.dc.html (D:<line>).
+ */
+
+/* ---- Department groups (D:67-69). The prototype runs on `line-height: normal`; rows, labels and cards
+   follow it so two-line rows sit on the same pixels as in the design. ---- */
+.rz-projects__groups {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  min-width: 0;
+  line-height: normal;
+}
+.rz-projects__group {
+  min-width: 0;
+}
+.rz-projects__label {
+  gap: 12px;
+  min-width: 0;
+}
+.rz-projects__label-text {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+/* The description gives way first; the name is only cut when it does not fit on its own. */
+.rz-projects__dept {
+  flex: 0 1 auto;
+  min-width: 0;
+  font-size: var(--fs-meta);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rz-projects__desc {
+  flex: 0 9999 auto;
+  min-width: 0;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* "Bewerken" is not in the design: quiet until the group is pointed at or holds the focus. */
+.rz-projects__edit {
+  opacity: 0;
+}
+.rz-projects__group:hover .rz-projects__edit,
+.rz-projects__group:focus-within .rz-projects__edit {
+  opacity: 1;
+}
+@media (hover: none) {
+  .rz-projects__edit {
+    opacity: 1;
+  }
+}
+/* Both quiet "nothing here" lines: an empty department and a tab without matches. */
+.rz-projects__none {
+  padding: 8px 12px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+
+/* ---- List row (D:72-78) ---- */
+.rz-projects__row {
+  --rz-row-h: 54px;
+  --rz-row-cols: 26px minmax(0, 1.5fr) auto minmax(90px, 1fr) auto;
+}
+.rz-projects__row .rz-row__text {
+  gap: 2px;
+}
+.rz-projects__progress {
+  min-width: 0;
+}
+.rz-projects__due {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.rz-projects__row .rz-projects__due {
+  min-width: 70px;
+  text-align: right;
+}
+
+/* One set of columns for the whole page: every row is a subgrid of its department, which is a subgrid of
+   the list, so status, progress and deadline line up across rows and departments. The row's 12px side
+   padding is taken out of its outer tracks, hence 26 + 12 for the fixed badge column (the last column is
+   `auto` and grows by itself). Without subgrid support each row keeps the prototype's own grid above. */
+@supports (grid-template-columns: subgrid) {
+  .rz-projects__groups--list {
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1.5fr) auto minmax(90px, 1fr) auto;
+    gap: 32px 14px;
+  }
+  .rz-projects__groups--list > *,
+  .rz-projects__groups--list .rz-projects__group > * {
+    grid-column: 1 / -1;
+  }
+  .rz-projects__groups--list .rz-projects__group {
+    display: grid;
+    grid-template-columns: subgrid;
+    gap: 4px 14px;
+  }
+  .rz-projects__groups--list .rz-projects__row {
+    --rz-row-cols: subgrid;
+  }
+}
+
+/* ---- Cards (D:82-88): auto-fill, so a single card keeps its column width ---- */
+.rz-projects__cards {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  padding: 6px 0 8px;
+}
+.rz-projects__card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.rz-projects__card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.rz-projects__card-name {
+  font-size: var(--fs-body);
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.rz-projects__card-goal {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+}
+.rz-projects__card-foot {
+  margin-top: auto;
+}
+
+/* ---- Narrow content column (web preview only; the app window is at least 1100px): drop the status ---- */
+@media (max-width: 720px) {
+  .rz-projects__row > .rz-status {
+    display: none;
+  }
+  .rz-projects__row {
+    --rz-row-cols: 26px minmax(0, 1fr) minmax(90px, 1fr) auto;
+  }
+  @supports (grid-template-columns: subgrid) {
+    .rz-projects__groups--list {
+      grid-template-columns: 38px minmax(0, 1fr) minmax(90px, 1fr) auto;
+    }
+  }
+}

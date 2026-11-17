@@ -1,0 +1,145 @@
+/* Minimaal — workplace. Every selector: html:root[data-design="minimaal"] <original selector>. See ../minimaal.css. */
+
+/*
+ * "Aan het werk": panes on plain --bg without a frame, separated only by the divider's 1px --line (Workplace.tsx
+ * drops the 4px inset in this style). The header has no fill and no rule; the terminal's own --term-line under it
+ * is the only line. Focus shows only in the title colour (--text vs --text2, workplace.css) and the cursor.
+ * Header buttons: Notities · Vergroten · ⋯ · Sluiten; Bestanden and Computer live in ⋯ (Workplace.tsx).
+ */
+
+/* ---- Canvas ---- */
+html:root[data-design="minimaal"] .rz-canvas {
+  background: var(--bg);
+}
+
+/* Divider: 1px --line, no widening and no green. Hover and keyboard focus darken the line (the neutral focus
+   ring of base.css stays on the hit area). */
+html:root[data-design="minimaal"] .rz-canvas__divider > i {
+  transition: background-color 0.15s ease;
+}
+html:root[data-design="minimaal"] .rz-canvas__divider--row:hover > i,
+html:root[data-design="minimaal"] .rz-canvas__divider--row:focus-visible > i {
+  width: 1px;
+  background: var(--muted);
+}
+html:root[data-design="minimaal"] .rz-canvas__divider--col:hover > i,
+html:root[data-design="minimaal"] .rz-canvas__divider--col:focus-visible > i {
+  height: 1px;
+  background: var(--muted);
+}
+
+/* ---- Pane: no frame, no green focus border, no glow ---- */
+html:root[data-design="minimaal"] .rz-pane {
+  transition: opacity 0.15s ease; /* the company filter fade only */
+}
+html:root[data-design="minimaal"] .rz-pane::before,
+html:root[data-design="minimaal"] .rz-pane[data-focused]::after {
+  content: none;
+}
+html:root[data-design="minimaal"] .rz-pane__inner {
+  border-radius: 0;
+}
+html:root[data-design="minimaal"] .rz-pane__head,
+html:root[data-design="minimaal"] .rz-pane[data-focused] .rz-pane__head {
+  background: none;
+  border-bottom: 0;
+  transition: none;
+}
+html:root[data-design="minimaal"] .rz-pane__title-button,
+html:root[data-design="minimaal"] .rz-pane__title-input {
+  border-radius: var(--r-icon);
+}
+
+/* Four buttons instead of six: a narrow pane keeps its one 52px row (workplace.css wraps at 380px for six).
+   The meta stays hidden but keeps pushing the status and the buttons to the right. Only a very narrow pane
+   (a divider dragged far) still takes the second row. */
+@container rz-pane (max-width: 380px) {
+  html:root[data-design="minimaal"] .rz-pane__head {
+    flex-wrap: nowrap;
+    height: 52px;
+    gap: 8px;
+    padding: 0 8px 0 14px;
+  }
+  html:root[data-design="minimaal"] .rz-pane__title {
+    flex: 0 1 auto;
+    max-width: none;
+  }
+  html:root[data-design="minimaal"] .rz-pane__meta {
+    display: block;
+    visibility: hidden;
+  }
+  html:root[data-design="minimaal"] .rz-pane__actions {
+    width: auto;
+    margin-left: 0;
+  }
+}
+@container rz-pane (max-width: 250px) {
+  html:root[data-design="minimaal"] .rz-pane__head {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 8px 8px 4px 14px;
+  }
+  html:root[data-design="minimaal"] .rz-pane__title {
+    flex: 1 1 0;
+  }
+  html:root[data-design="minimaal"] .rz-pane__meta {
+    display: none;
+  }
+  html:root[data-design="minimaal"] .rz-pane__actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+/* Warn tints through the token instead of a retyped mix */
+html:root[data-design="minimaal"] .rz-pane__warning,
+html:root[data-design="minimaal"] .rz-pane__line[data-kind="question"] {
+  background: var(--warn-tint);
+}
+
+/* Activiteit: green only on the working cursor; the ✓ and › marks stay neutral */
+html:root[data-design="minimaal"]
+  .rz-pane__line[data-kind="result"]
+  .rz-pane__mark {
+  color: var(--text2);
+}
+html:root[data-design="minimaal"]
+  .rz-pane__line[data-kind="live"]
+  .rz-pane__mark {
+  color: var(--muted);
+}
+
+/* Dropping a file on the conversation: a neutral outline instead of a green one */
+html:root[data-design="minimaal"] .rz-workplace-term[data-file-drop="true"] {
+  outline-color: var(--muted);
+}
+
+/* ---- Files panel beside the conversation (session-files.css): plain --bg, one --line on its left ---- */
+html:root[data-design="minimaal"] .rz-session-files {
+  --rz-fileviewer-bg: var(--bg);
+  background: var(--bg);
+  border-left-color: var(--line);
+}
+@container (max-width: 740px) {
+  html:root[data-design="minimaal"] .rz-session-files {
+    box-shadow: none; /* the overlay is set off by its line, not a shadow */
+  }
+}
+/* File icons without a grey tile */
+html:root[data-design="minimaal"] .rz-session-files__tile {
+  background: none;
+  color: var(--muted);
+}
+/* The quiet counter (only still drawn where SessionFilesButton is used outside the canvas): 11px text, no pill */
+html:root[data-design="minimaal"] .rz-session-files__count {
+  top: 2px;
+  right: 1px;
+  min-width: 0;
+  height: auto;
+  padding: 0;
+  background: none;
+  color: var(--muted);
+  font-size: var(--fs-col);
+  font-weight: 500;
+  line-height: 1;
+}

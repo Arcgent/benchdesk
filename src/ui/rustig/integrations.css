@@ -1,0 +1,528 @@
+/*
+ * Rustig area css: integrations
+ * Koppelingen incl. Gmail session choice and its modals.
+ * Block prefix(es): rz-integrations. EVERY selector in this file starts with one of them, so the import order in
+ * index.css never matters. Shared look comes from primitives.css (via src/ui/rz.tsx): never restyle an
+ * `rz-` primitive globally from here, never use a legacy class name, never write `!important`.
+ * This file has exactly one owner package; index.css already imports it.
+ *
+ * Koppelingen has no prototype (README "Niet in scope … bouw die in dezelfde stijl"): the page speaks the row
+ * language of Accounts Rustig.dc.html (D:<line>). Page frame, head, section labels, rows, status, badges, pills,
+ * checks, chips, fields and modals are the shared primitives; this file only adds what they do not have.
+ * Where a primitive's own modifier has to lose (row columns, chip size), the selector is doubled or nested so it
+ * wins on specificity instead of on import order.
+ */
+
+/* ---- Sections are the containers the narrow layout asks (the page column itself stays uncontained) ---- */
+.rz-integrations__section {
+  container: rz-integrations / inline-size;
+}
+
+/* ---- Integration catalog: compact brand cards, inspired by plugin directories but kept in Rustig's quiet
+        palette. The cards summarize; provider-specific controls open in a modal or continue below. ---- */
+.rz-integrations__catalog {
+  gap: 8px;
+}
+.rz-integrations__cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  min-width: 0;
+}
+.rz-integrations__provider-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 22px;
+  min-width: 0;
+  min-height: 148px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: color-mix(in srgb, var(--row) 42%, var(--bg));
+  transition:
+    border-color 140ms ease,
+    background 140ms ease,
+    transform 140ms ease;
+}
+.rz-integrations__provider-card:hover {
+  border-color: color-mix(in srgb, var(--text2) 24%, var(--line));
+  background: color-mix(in srgb, var(--row) 72%, var(--bg));
+  transform: translateY(-1px);
+}
+.rz-integrations__provider-card[data-connected] {
+  border-color: color-mix(in srgb, var(--accent) 24%, var(--line));
+}
+.rz-integrations__card-head {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  min-width: 0;
+}
+button.rz-integrations__card-head {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+button.rz-integrations__card-head:disabled {
+  cursor: default;
+}
+button.rz-integrations__card-head:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--text) 35%, transparent);
+  outline-offset: 5px;
+  border-radius: 8px;
+}
+.rz-integrations__brand {
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  overflow: hidden;
+}
+.rz-integrations__brand--gmail {
+  background: #fff;
+  border: 1px solid color-mix(in srgb, #000 8%, transparent);
+}
+.rz-integrations__brand--gmail svg {
+  display: block;
+  width: 27px;
+  height: 27px;
+}
+.rz-integrations__brand--typesafe {
+  background: var(--text);
+  color: var(--bg);
+  font-family: var(--mono);
+  font-size: 28px;
+  line-height: 1;
+}
+.rz-integrations__brand--fireflies {
+  background: #fff3e8;
+  color: #e85d2a;
+}
+.rz-integrations__brand--pocket {
+  background: #ecf8f7;
+  color: #087f78;
+}
+.rz-integrations__brand--unipile {
+  background: #eef2ff;
+  color: #4d5bd1;
+}
+.rz-integrations__brand--github {
+  background: #17191d;
+  color: #fff;
+}
+.rz-integrations__brand--blotato {
+  background: #eef6ff;
+  color: #2563eb;
+}
+.rz-integrations__card-copy {
+  display: -webkit-box;
+  margin: 2px 0 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: var(--fs-meta);
+  line-height: 1.35;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+.rz-integrations__card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+}
+.rz-integrations__card-state {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+.rz-integrations__card-state > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rz-integrations__card-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+}
+
+/* ---- Identity: two lines, 12/500 over 11.5 muted, gap 2 (D:72). The first line is a heading (h3 in the rows,
+        h2 in the browser notice, where it sits directly under the h1); the class wins over base.css's h2 600. ---- */
+.rz-integrations__identity {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.rz-integrations__name {
+  margin: 0;
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rz-integrations__sub {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* App icon: a neutral 28px tile, never an accent fill (green is for actions) */
+.rz-integrations__tile {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--bubble);
+  display: grid;
+  place-items: center;
+  color: var(--text2);
+  flex: none;
+}
+/* Right side of a row: pills + icon button, gap 6, right aligned (D:80) */
+.rz-integrations__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  min-width: 0;
+}
+.rz-integrations__count {
+  margin-right: 6px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* ---- Quiet lines at the 12px inset of the rows: setup note, hints, loading, section intro (D:89) ---- */
+.rz-integrations__note {
+  margin: 0;
+  padding: 0 12px;
+  max-width: 660px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* ---- Status line: load failure (role=alert) and the pending Google login (role=status). A neutral --row
+        fill, the state is carried by the 6px dot; no tinted backgrounds. ---- */
+.rz-integrations__status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 10px 12px;
+  border-radius: var(--r-row);
+  background: var(--row);
+  font-size: var(--fs-body);
+  color: var(--text);
+}
+.rz-integrations__status-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+}
+.rz-integrations__done {
+  color: var(--accent);
+}
+/* the pill sits on a --row fill, so its hover is the page colour (same idea as the chip on a hovered row, D:82) */
+.rz-integrations__status .rz-integrations__retry:hover {
+  background: var(--bg);
+}
+
+/* ---- Browser preview: one static block in the row rhythm, no hover ---- */
+.rz-integrations__notice {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+  padding: 10px 12px;
+}
+.rz-integrations__notice .rz-integrations__name {
+  white-space: normal;
+}
+.rz-integrations__notice-text {
+  margin: 0;
+  max-width: 600px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* ---- Connected accounts: per account one group = account row (D:71) + the access grid, 4px apart (D:67) ---- */
+.rz-integrations__groups {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+.rz-integrations__group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  --rz-integrations-cols: minmax(0, 1fr) 72px 88px; /* Bedrijf · Lezen · Concepten */
+}
+.rz-integrations__group .rz-integrations__account {
+  --rz-row-cols: minmax(0, 1fr) auto auto; /* identity · status · actions */
+  --rz-row-gap: 16px; /* D:71 */
+}
+/* Column heads (`.rz-colhead`: 11px muted, 24px, gap 16, inset 12) on the same tracks as the rows below */
+.rz-integrations__group .rz-integrations__cols {
+  grid-template-columns: var(--rz-integrations-cols);
+}
+.rz-integrations__cols > :not(:first-child) {
+  text-align: center;
+}
+/* notes §1.4: the 44px rows keep radius 14 here (`.rz-row--sm` says 12) */
+.rz-integrations__group .rz-integrations__company-row {
+  --rz-row-cols: var(--rz-integrations-cols);
+  --rz-row-gap: 16px;
+  border-radius: var(--r-row);
+}
+.rz-integrations__company {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.rz-integrations__company-name {
+  min-width: 0;
+  font-size: var(--fs-body);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rz-integrations__current {
+  flex: none;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.rz-integrations__cell {
+  display: grid;
+  place-items: center;
+}
+/* ---- Per conversation: assistant avatar 22 · title · access chip ---- */
+.rz-integrations__sessions .rz-integrations__session {
+  --rz-row-cols: 22px minmax(0, 1fr) auto;
+  border-radius: var(--r-row); /* notes §1.4: 44px rows, radius 14 */
+}
+.rz-integrations__settings-sessions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--line2);
+}
+.rz-integrations__settings-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 2px;
+}
+.rz-integrations__settings-head h3 {
+  margin: 0;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--text);
+}
+.rz-integrations__settings-head p {
+  margin: 0;
+  max-width: 520px;
+  font-size: var(--fs-meta);
+  line-height: 1.45;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+.rz-integrations__settings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+/* ---- Access chip: the company chip of Accounts (28px, 11.5px, chevron 11; D:82) with room for the longest
+        option. The native <select> lies over it (Chip `control`). ---- */
+.rz-integrations__select.rz-integrations__select {
+  height: 28px;
+  padding: 0 10px;
+  gap: 6px;
+  max-width: 210px;
+}
+/* D:82: on a hovered row the chip turns white */
+.rz-integrations__sessions .rz-integrations__select:hover {
+  background: var(--bg);
+}
+.rz-integrations__select.rz-integrations__select[data-disabled],
+.rz-integrations__select.rz-integrations__select[data-disabled]:hover {
+  background: transparent;
+  opacity: 0.35;
+  cursor: default;
+}
+.rz-integrations__select[data-disabled] select {
+  cursor: default;
+}
+
+/* ---- Footnote (D:89) with a 14px shield ---- */
+.rz-integrations__foot {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  padding: 0 12px;
+  max-width: 660px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  text-wrap: pretty;
+}
+.rz-integrations__foot svg {
+  margin-top: 2px;
+}
+
+/* ---- Narrow content column (README "Responsief"): the status moves under the e-mail, the count goes ---- */
+@container rz-integrations (max-width: 600px) {
+  .rz-integrations__cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .rz-integrations__group .rz-integrations__account {
+    --rz-row-cols: minmax(0, 1fr) auto;
+    row-gap: 6px;
+  }
+  .rz-integrations__account .rz-integrations__identity {
+    grid-area: 1 / 1;
+  }
+  .rz-integrations__account .rz-integrations__actions {
+    grid-area: 1 / 2;
+  }
+  .rz-integrations__account .rz-integrations__state {
+    grid-area: 2 / 1 / auto / -1;
+  }
+  .rz-integrations__count {
+    display: none;
+  }
+}
+@container rz-integrations (min-width: 601px) and (max-width: 900px) {
+  .rz-integrations__cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ==== Modals (Modal › ModalBody › Field / Input / ModalFoot are primitives) ==== */
+.rz-integrations__lead strong {
+  font-weight: 600;
+  color: var(--text);
+}
+/* File input: the native control stays (label + setInputFiles); its button is the secondary pill */
+.rz-integrations__file {
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  cursor: pointer;
+}
+.rz-integrations__file::file-selector-button {
+  height: 32px;
+  margin: 0 12px 0 0;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  background: transparent;
+  font: inherit;
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+}
+.rz-integrations__file:not(:disabled)::file-selector-button:hover {
+  background: var(--row);
+}
+.rz-integrations__file:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--text) 40%, transparent);
+  outline-offset: 2px;
+}
+.rz-integrations__file:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.rz-integrations__file:disabled::file-selector-button {
+  cursor: default;
+}
+/* Consent: a native checkbox (drawn by base.css: 15px, r5, accent when checked) with its text in one <label> */
+.rz-integrations__consent-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.rz-integrations__consent-block .rz-hint {
+  padding-left: 25px; /* under the text: checkbox 15 + gap 10 */
+}
+.rz-integrations__consent {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  align-self: flex-start;
+  min-height: 28px;
+  font-size: var(--fs-body);
+  color: var(--text);
+  cursor: pointer;
+}
+.rz-integrations__consent:has(input:disabled) {
+  cursor: default;
+}
+/* Destructive confirm: the secondary pill with --warn text; green stays for positive actions */
+.rz-integrations__danger.rz-integrations__danger,
+.rz-integrations__danger.rz-integrations__danger:hover {
+  color: var(--warn);
+}
+
+/* ==== GmailSessionChoice (rendered inside the Launcher's ModalBody): label · chip, help underneath ==== */
+.rz-integrations-choice {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 12px;
+  row-gap: 6px;
+  align-items: center;
+  min-width: 0;
+}
+.rz-integrations-choice__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font-size: var(--fs-meta);
+  font-weight: 400;
+  color: var(--muted);
+}
+.rz-integrations-choice__hint {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  text-wrap: pretty;
+}

@@ -1,0 +1,218 @@
+/*
+ * Rustig area css: session-files
+ * Files button + panel beside a conversation (keeps the container-query behaviour).
+ * Block prefix(es): rz-session-files. EVERY selector in this file starts with one of them, so the import order in
+ * index.css never matters. Shared look comes from primitives.css (via src/ui/rz.tsx): never restyle an
+ * `rz-` primitive globally from here, never use a legacy class name, never write `!important`.
+ * This file has exactly one owner package; index.css already imports it.
+ *
+ * Not drawn in the design. Built from the Beoordelen right pane (`--side`, 1px `--line2` on the left, D/Beoordelen:96)
+ * and its "Opgeleverd" rows (D/Beoordelen:86: tile 26 r7 `--bubble`, icon 13 `--text2`, name 12/500, r12).
+ * FileViewer belongs to the review package: this file only sizes it (`__viewer > *`), nothing inside it.
+ */
+
+/* ---- Toggle in the pane header: one 30px icon button, the count is a quiet aria-hidden counter ---- */
+.rz-session-files__toggle {
+  position: relative;
+}
+.rz-session-files__toggle[aria-expanded="true"] {
+  background: var(--hover);
+  color: var(--text);
+}
+.rz-session-files__count {
+  position: absolute;
+  top: 1px;
+  right: 0;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  border-radius: var(--r-pill);
+  background: var(--bubble);
+  color: var(--text2);
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 14px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+/* ---- Panel. Geometry is a contract (smoke-pro: the panel stays inside the pane at 1100px):
+        beside the conversation 46% (340–720px); an overlay of at most 480px when the host is narrower than 740px. ---- */
+.rz-session-files {
+  display: flex;
+  flex-direction: column;
+  flex: none;
+  width: 46%;
+  min-width: 340px;
+  max-width: 720px;
+  min-height: 0;
+  border-left: 1px solid var(--line2);
+  background: var(--side);
+  color: var(--text);
+  overflow: hidden;
+}
+/* The host (`.rz-pane__body`, owned by Workplace) is the positioned inline-size container this query measures. */
+@container (max-width: 740px) {
+  .rz-session-files {
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: min(100%, 480px);
+    min-width: 0;
+    max-width: none;
+    z-index: 3;
+    box-shadow: -8px 0 24px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.rz-session-files__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex: none;
+  padding: 10px 10px 0 20px;
+}
+.rz-session-files__title {
+  margin: 0;
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--text);
+}
+.rz-session-files__help {
+  flex: none;
+  margin: 2px 20px 10px;
+  font-size: var(--fs-meta);
+  line-height: 1.5;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+/* the shared `.rz-error--block` look; only its place in the column is ours */
+.rz-session-files__error {
+  flex: none;
+  margin: 0 8px 10px;
+}
+
+/* ---- Picker: the current file as a row, the list as a popover under it ---- */
+.rz-session-files__picker {
+  position: relative;
+  flex: none;
+  margin: 0 8px;
+}
+.rz-session-files__current {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto auto;
+  gap: 10px;
+  align-items: center;
+  min-height: 42px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  list-style: none;
+}
+.rz-session-files__current::-webkit-details-marker {
+  display: none;
+}
+.rz-session-files__current:hover,
+.rz-session-files__picker[open] > .rz-session-files__current {
+  background: var(--hover);
+}
+.rz-session-files__tile {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: var(--bubble);
+  color: var(--text2);
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.rz-session-files__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--fs-body);
+  font-weight: 500;
+}
+.rz-session-files__total {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.rz-session-files__chevron {
+  color: var(--muted);
+}
+.rz-session-files__picker[open] .rz-session-files__chevron {
+  transform: rotate(180deg);
+}
+.rz-session-files__list {
+  position: absolute;
+  z-index: 4;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 220px;
+  overflow: auto;
+  padding: 6px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow-menu);
+}
+.rz-session-files__list > * {
+  flex: none;
+}
+.rz-session-files__file {
+  --rz-row-h: 42px; /* D/Beoordelen:86, same as the TaskInfo file rows */
+}
+
+/* ---- Viewer slot: sizing only ---- */
+.rz-session-files__viewer {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  margin-top: 6px;
+}
+.rz-session-files__viewer > * {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* ---- Empty / loading / unavailable ---- */
+.rz-session-files__empty {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 0;
+  padding: 24px;
+  text-align: center;
+  font-size: var(--fs-body);
+}
+.rz-session-files__empty strong {
+  font-weight: 500;
+  color: var(--text);
+}
+.rz-session-files__empty p {
+  max-width: 260px;
+  margin: 0;
+  font-size: var(--fs-meta);
+  line-height: 1.5;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.rz-session-files__foot {
+  flex: none;
+  padding: 10px 20px 14px;
+  border-top: 1px solid var(--line2);
+}

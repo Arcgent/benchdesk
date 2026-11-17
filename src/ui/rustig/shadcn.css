@@ -1,0 +1,843 @@
+/*
+ * shadcn — the default design style since 29-09-2026, after ui.shadcn.com/docs (neutral palette, Geist,
+ * radius 0.625rem). Chosen in Profiel → Stijl (Theme.tsx `setDesign`), applied as `data-design="shadcn"` on
+ * <html>; "standaard" (Rustig) and "minimaal" stay available. Preview + decisions: previews/shadcn/README.md.
+ *
+ * Source of the values: the live docs stylesheet (29-09-2026): --background #fff / #0a0a0a, --foreground,
+ * --primary #171717 / #e5e5e5, --muted #f5f5f5 / #262626, --muted-foreground #737373 / #a1a1a1,
+ * --border #e5e5e5 / white 10%, --input white 15%, --ring #a1a1a1 / #737373, --radius .625rem.
+ * Component specs (button h-9 rounded-md, input h-9 shadow-xs, tabs bg-muted p-[3px], card rounded-xl
+ * shadow-sm, menu rounded-md p-1, dialog rounded-lg shadow-lg, sidebar item h-[30px] text-[0.8rem]) are the
+ * new-york v4 classes.
+ *
+ * Scoping: everything sits inside `html:root[data-design="shadcn"]` (native nesting, lowered by the build), the
+ * same (0,2,1) prefix minimaal.css uses, so an override beats the Rustig rule it replaces in every area file,
+ * also agents.css / agents-openbot.css / brain.css / dashboard.css that load later. Rustig itself never changes.
+ * Only CSS: the markup is the Rustig markup. The terminal palette (--term-*) is left alone on purpose:
+ * xterm takes its colours from shared/terminal-theme.ts (tests/terminal-colors.test.ts pins the two together).
+ * Geist: src/ui/assets/geist-latin-wght-normal.woff2 (@fontsource-variable/geist 5.3.0, SIL OFL 1.1, see
+ * geist-OFL.txt next to it). The browser only fetches it when this style is active.
+ */
+@font-face {
+  font-family: "Geist Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("../assets/geist-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308,
+    U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+html:root[data-design="shadcn"] {
+  /* ---- Tokens (light) ---- */
+  &,
+  & .ob-look {
+    --bg: #ffffff;
+    --side: #fafafa;
+    --card: #ffffff;
+    --hover: #f5f5f5;
+    --row: #f5f5f5;
+    --line: #e5e5e5;
+    --line2: #e5e5e5;
+    --input: #e5e5e5;
+    --bubble: #f5f5f5;
+    --text: #0a0a0a;
+    --text2: #525252;
+    --muted: #737373;
+    --btn: #171717;
+    --btn-text: #fafafa;
+    --accent: #171717;
+    --on-accent: #fafafa;
+    --ring: #a1a1a1;
+    --ok: #059669;
+    --warn: #d97706;
+    --blue: #2563eb;
+    --danger: #e7000b;
+    --warn-tint: color-mix(in srgb, var(--warn) 10%, transparent);
+    --blue-tint: color-mix(in srgb, var(--blue) 10%, transparent);
+    --overlay: rgb(0 0 0 / 0.5);
+    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-modal: var(--shadow-lg);
+    --shadow-menu: var(--shadow-md);
+    --shadow-toast: var(--shadow-lg);
+    --shadow-composer: var(--shadow-xs);
+    --shadow-composer-sm: var(--shadow-xs);
+    --focus-ring: 0 0 0 3px color-mix(in srgb, var(--ring) 50%, transparent);
+    --font: "Geist Variable", "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --fs-h1: 30px;
+    --fs-title: 18px;
+    --fs-lead: 16px;
+    --fs-body: 14px;
+    --fs-meta: 12.5px;
+    --fs-col: 12px;
+    --r-row: 8px;
+    --r-card: 14px;
+    --r-pill: 8px;
+    --r-icon: 8px;
+    --r-modal: 10px;
+    --r-composer: 14px;
+    --ob-radius: 8px;
+    --side-w: 272px;
+  }
+  /* ---- Tokens (dark) ---- */
+  &[data-theme="dark"],
+  &[data-theme="dark"] .ob-look {
+    --bg: #0a0a0a;
+    --side: #0a0a0a;
+    --card: #171717;
+    --hover: #262626;
+    --row: #1c1c1c;
+    --line: rgb(255 255 255 / 0.1);
+    --line2: rgb(255 255 255 / 0.08);
+    --input: rgb(255 255 255 / 0.15);
+    --bubble: #262626;
+    --text: #fafafa;
+    --text2: #d4d4d4;
+    --muted: #a1a1a1;
+    --btn: #e5e5e5;
+    --btn-text: #171717;
+    --accent: #e5e5e5;
+    --on-accent: #171717;
+    --ring: #737373;
+    --ok: #34d399;
+    --warn: #fbbf24;
+    --blue: #60a5fa;
+    --danger: #ff6467;
+    --overlay: rgb(0 0 0 / 0.6);
+    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.4);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5);
+  }
+
+  /* ---- Base ---- */
+  & body {
+    font-family: var(--font);
+    font-feature-settings: normal;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  & ::selection {
+    background: var(--text);
+    color: var(--bg);
+  }
+  & :focus-visible,
+  & button:focus-visible,
+  & a:focus-visible {
+    outline: 0;
+    box-shadow: var(--focus-ring);
+  }
+  & ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  & ::-webkit-scrollbar-thumb {
+    background: var(--line);
+    border-radius: 8px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  /* ---- Sidebar: docs look. Same surface as the page, a hairline that fades out at both ends. ---- */
+  & .rz-side {
+    background:
+      linear-gradient(to bottom, transparent 0%, var(--line) 8%, var(--line) 92%, transparent 100%) right / 1px
+        100% no-repeat,
+      var(--bg);
+    padding: 12px 12px 10px;
+  }
+  & .rz-side__head {
+    padding: 0 6px;
+  }
+  & .rz-nav {
+    --rz-nav-h: 32px;
+    gap: 8px;
+    padding: 0 8px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  & .rz-nav > svg:first-child {
+    width: 16px;
+    height: 16px;
+    color: var(--text2);
+  }
+  & .rz-nav:hover {
+    background: var(--hover);
+  }
+  & .rz-nav[aria-current="page"] {
+    background: var(--hover);
+    border-color: var(--hover);
+  }
+  & .rz-nav[aria-current="page"] > svg:first-child {
+    color: var(--text);
+  }
+  & .rz-nav--project,
+  & .rz-nav--foot {
+    --rz-nav-h: 32px;
+  }
+  & .rz-nav--foot {
+    color: var(--text2);
+  }
+  & .rz-nav__count {
+    font-size: 12px;
+    font-weight: 500;
+  }
+  & .rz-side .rz-side__accent {
+    color: var(--text);
+  }
+  & .rz-side .rz-nav--project > svg:first-child {
+    color: var(--text2);
+  }
+  /* Open conversations in the one menu: same row height as the nav rows above them. */
+  & .rz-convlist__item {
+    height: 32px;
+  }
+  & .rz-side__label {
+    height: 32px;
+    padding: 0 8px;
+    margin-top: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  & .rz-side__preview {
+    padding: 0 8px;
+    font-size: 12px;
+  }
+  & .rz-side__bottom {
+    padding-top: 8px;
+  }
+  /* Company switcher: an outline select trigger (shadcn Select / team switcher). */
+  & .rz-switcher {
+    height: 36px;
+    padding: 0 10px 0 8px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg);
+    box-shadow: var(--shadow-xs);
+    font-size: 14px;
+    font-weight: 500;
+  }
+  & .rz-switcher:hover,
+  & .rz-switcher[aria-expanded="true"] {
+    background: var(--hover);
+  }
+  & .rz-switcher > svg:last-child {
+    margin-left: auto;
+  }
+  & .rz-user {
+    border-radius: 8px;
+    padding: 0 8px;
+  }
+  & .rz-user__name {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  & .rz-user__role {
+    font-size: 12px;
+  }
+  & .rz-bell .rz-bell__dot {
+    box-shadow: 0 0 0 2px var(--bg);
+  }
+
+  /* ---- Page head: docs title (text-3xl semibold tracking-tight) + muted description ---- */
+  & .rz-h1 {
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+  }
+  & .rz-h1--review {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  & .rz-head__text {
+    gap: 8px;
+  }
+  & .rz-head__meta,
+  & .rz-lead {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  & .rz-metaline,
+  & .rz-crumbs {
+    font-size: 13px;
+  }
+  & .rz-crumbs__link:hover {
+    color: var(--text);
+  }
+
+  /* ---- Buttons: rounded-md, h-9, text-sm font-medium. Variants: default / outline / ghost. ---- */
+  & .rz-btn {
+    height: 36px;
+    padding: 0 16px;
+    gap: 8px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.15s, color 0.15s, box-shadow 0.15s;
+  }
+  & .rz-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+  & .rz-btn--primary {
+    background: var(--btn);
+    color: var(--btn-text);
+    box-shadow: var(--shadow-xs);
+  }
+  & .rz-btn--primary:hover {
+    opacity: 1;
+    background: color-mix(in srgb, var(--btn) 90%, transparent);
+  }
+  & .rz-btn--primary:disabled {
+    background-color: var(--btn);
+  }
+  & .rz-btn--secondary,
+  & .rz-btn--ghost {
+    border: 1px solid var(--line);
+    background: var(--bg);
+    box-shadow: var(--shadow-xs);
+  }
+  & .rz-btn--secondary:hover,
+  & .rz-btn--ghost:hover {
+    background: var(--hover);
+  }
+  & .rz-btn--quiet {
+    color: var(--text);
+  }
+  & .rz-btn--quiet:hover {
+    background: var(--hover);
+  }
+  & .rz-btn--sm {
+    height: 32px;
+    padding: 0 12px;
+    gap: 6px;
+  }
+  & .rz-btn--row {
+    height: 32px;
+    padding: 0 12px;
+  }
+  & .rz-btn--lg {
+    height: 40px;
+    padding: 0 24px;
+  }
+  & .rz-btn:disabled {
+    opacity: 0.5;
+  }
+  & .rz-btn__spark {
+    color: inherit;
+  }
+  & .rz-link--accent {
+    color: var(--text);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  & .rz-link--accent:hover {
+    opacity: 1;
+    color: var(--text);
+  }
+  & .rz-iconbtn:hover {
+    background: var(--hover);
+  }
+  & .rz-toolbtn {
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  & .rz-toolbtn:hover {
+    background: var(--hover);
+  }
+
+  /* ---- Fields: h-9 rounded-md border-input shadow-xs, focus ring 3px ring/50 ---- */
+  & .rz-field,
+  & .rz-field__label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  & .rz-field {
+    gap: 8px;
+  }
+  & .rz-input,
+  & .rz-textarea,
+  & .rz-select {
+    border: 1px solid var(--input);
+    border-radius: 8px;
+    padding: 8px 12px;
+    background: transparent;
+    font-size: 14px;
+    box-shadow: var(--shadow-xs);
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  & .rz-input,
+  & .rz-select {
+    height: 36px;
+    padding-block: 0;
+  }
+  & .rz-textarea--sm {
+    border-radius: 8px;
+  }
+  & .rz-input::placeholder,
+  & .rz-textarea::placeholder {
+    color: var(--muted);
+  }
+  & .rz-input:focus,
+  & .rz-textarea:focus,
+  & .rz-select:focus {
+    border-color: var(--ring);
+    box-shadow: var(--focus-ring);
+  }
+  & .rz-input--bare,
+  & .rz-input--bare:focus {
+    border: 0;
+    box-shadow: none;
+    background: transparent;
+    padding: 0;
+    height: auto;
+  }
+  & .rz-input--title {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  & .rz-hint {
+    font-size: 13px;
+  }
+  & .rz-error--block {
+    border-radius: 8px;
+  }
+  &[data-theme="dark"] .rz-input,
+  &[data-theme="dark"] .rz-textarea,
+  &[data-theme="dark"] .rz-select {
+    background: rgb(255 255 255 / 0.045);
+  }
+
+  /* ---- Tabs: segmented (bg-muted rounded-lg p-[3px], active bg-background shadow-sm) ---- */
+  & .rz-tabs {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    width: fit-content;
+    max-width: 100%;
+    height: 36px;
+    padding: 3px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--hover);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  & .rz-tab {
+    height: 100%;
+    padding: 0 10px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text2);
+    transition: color 0.15s, background-color 0.15s, box-shadow 0.15s;
+  }
+  & .rz-tab:hover {
+    color: var(--text);
+  }
+  & .rz-tab[aria-selected="true"],
+  & .rz-tab[aria-pressed="true"],
+  & .rz-tab[aria-current="true"] {
+    background: var(--bg);
+    color: var(--text);
+    font-weight: 500;
+    box-shadow: var(--shadow-sm);
+  }
+  &[data-theme="dark"] .rz-tab[aria-selected="true"],
+  &[data-theme="dark"] .rz-tab[aria-pressed="true"],
+  &[data-theme="dark"] .rz-tab[aria-current="true"] {
+    background: rgb(255 255 255 / 0.06);
+    border-color: var(--input);
+  }
+  & .rz-tab__count {
+    font-size: 12px;
+    font-weight: 500;
+  }
+  & .rz-tabs--bar {
+    height: 36px;
+  }
+  & .rz-tabs--bar .rz-tab {
+    height: 100%;
+    margin-right: 0;
+    padding: 0 10px;
+  }
+  & .rz-tabbar {
+    align-items: center;
+  }
+  & .rz-texttab[aria-selected="true"],
+  & .rz-texttab[aria-pressed="true"] {
+    font-weight: 500;
+  }
+  /* View switch: outline toggle group */
+  & .rz-viewswitch {
+    gap: 0;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow: var(--shadow-xs);
+    overflow: hidden;
+  }
+  & .rz-viewswitch .rz-iconbtn {
+    border-radius: 0;
+  }
+  & .rz-viewswitch .rz-iconbtn + .rz-iconbtn {
+    border-left: 1px solid var(--line);
+  }
+  & .rz-viewswitch .rz-iconbtn[aria-pressed="true"] {
+    background: var(--hover);
+  }
+
+  /* ---- Cards: rounded-xl border bg-card shadow-sm ---- */
+  & .rz-card {
+    background: var(--card);
+    border-radius: 14px;
+    box-shadow: var(--shadow-sm);
+    padding: 20px;
+  }
+  & a.rz-card:hover,
+  & button.rz-card:hover {
+    background: color-mix(in srgb, var(--hover) 50%, var(--card));
+  }
+  & .rz-card[aria-selected="true"],
+  & .rz-card[aria-pressed="true"] {
+    border-color: var(--text);
+  }
+  & .rz-card--project {
+    padding: 20px;
+  }
+  & .rz-card--board {
+    padding: 12px 14px;
+    border-radius: 10px;
+    box-shadow: var(--shadow-xs);
+  }
+  & .rz-card--dashed {
+    box-shadow: none;
+    background: transparent;
+  }
+  & .rz-card__label {
+    font-size: 13px;
+    font-weight: 500;
+  }
+  & .rz-card__label strong {
+    color: var(--text);
+  }
+  & .rz-figure__big {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  & .rz-choice {
+    border-radius: 10px;
+    box-shadow: var(--shadow-xs);
+  }
+  & .rz-choice[aria-checked="true"],
+  & .rz-choice[aria-pressed="true"] {
+    border-color: var(--text);
+    background: color-mix(in srgb, var(--text) 3%, transparent);
+  }
+  & .rz-inset {
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--side);
+  }
+  & .rz-addrow {
+    border-radius: 8px;
+  }
+  & .rz-addrow__box {
+    border-radius: 6px;
+  }
+
+  /* ---- Rows, checks, status ---- */
+  & .rz-row {
+    border-radius: 8px;
+  }
+  & .rz-row__title {
+    font-weight: 500;
+  }
+  & .rz-row--sm,
+  & .rz-row--xs {
+    border-radius: 8px;
+  }
+  & .rz-check__box {
+    border: 1px solid color-mix(in srgb, var(--text) 25%, transparent);
+    box-shadow: var(--shadow-xs);
+  }
+  & .rz-check--square {
+    --rz-check: 16px;
+    --rz-check-r: 4px;
+  }
+  & .rz-check--xs {
+    --rz-check: 16px;
+    --rz-check-r: 4px;
+  }
+  & .rz-radio {
+    border: 1px solid color-mix(in srgb, var(--text) 25%, transparent);
+  }
+  & [data-tone="accent"] {
+    --rz-tone: var(--ok);
+  }
+  & .rz-status--accent {
+    color: var(--ok);
+  }
+  & .rz-bar {
+    height: 6px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--btn) 15%, transparent);
+  }
+  & .rz-bar > i {
+    border-radius: 999px;
+    background: var(--rz-tone, var(--btn));
+  }
+  & .rz-meter__value {
+    color: var(--rz-tone, var(--text));
+  }
+
+  /* ---- Chips = shadcn badge / small outline toggle ---- */
+  & .rz-chip {
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  & .rz-chip--toggle[aria-pressed="true"] {
+    background: var(--hover);
+    border-color: var(--line);
+  }
+  & .rz-chip--mono,
+  & .rz-kbd {
+    height: 20px;
+    padding: 0 6px;
+    border: 0;
+    border-radius: 4px;
+    background: var(--hover);
+    color: var(--muted);
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  /* ---- Menus: rounded-md border p-1 shadow-md, items rounded-sm ---- */
+  & .rz-menu {
+    padding: 4px;
+    border-radius: 8px;
+    background: var(--card);
+    box-shadow: var(--shadow-md);
+  }
+  & .rz-menu__item {
+    min-height: 32px;
+    padding: 0 8px;
+    gap: 8px;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  & .rz-menu__item[aria-checked="true"] {
+    font-weight: 500;
+  }
+  & .rz-menu__sep {
+    margin: 4px -4px;
+    background: var(--line);
+  }
+  & .rz-menu__label {
+    height: 30px;
+    padding: 0 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  & .rz-menu.ob-look .rz-menu__item {
+    border-radius: 4px;
+  }
+
+  /* ---- Dialog: rounded-lg border p-6 shadow-lg, overlay black/50 ---- */
+  & .rz-modal {
+    background: var(--card);
+    border-radius: 10px;
+  }
+  &:not([data-theme="dark"]) .rz-modal {
+    background: var(--bg);
+  }
+  & .rz-modal__head {
+    padding: 24px 24px 0;
+    font-size: 13px;
+  }
+  & .rz-modal__body {
+    gap: 16px;
+    padding: 12px 24px 24px;
+  }
+  & .rz-modal__title {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  & .rz-modal__foot {
+    border-top: 0;
+    padding-top: 8px;
+  }
+  & .rz-modal__foot--docked {
+    padding: 16px 24px 24px;
+    border-top: 1px solid var(--line);
+  }
+  & .rz-steps > [aria-current="step"] {
+    font-weight: 500;
+  }
+
+  /* ---- Toast: sonner (card, border, shadow-lg) ---- */
+  & .rz-toast {
+    min-height: 44px;
+    padding: 0 16px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--card);
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 500;
+  }
+  &:not([data-theme="dark"]) .rz-toast {
+    background: var(--bg);
+  }
+  & .rz-toast--wrap {
+    border-radius: 8px;
+    padding-block: 12px;
+  }
+
+  /* ---- Composer: textarea card ---- */
+  & .rz-composer {
+    border-color: var(--input);
+  }
+
+  /* ---- Empty state ---- */
+  & .rz-empty__title {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  & .rz-empty__text {
+    font-size: 14px;
+  }
+
+  /* ---- Canvas top bar: header row like the docs header ---- */
+  & .rz-topbar {
+    border-bottom-color: var(--line);
+  }
+
+  /* ---- Company / project badge: without its own tint it is the primary square of the shadcn team switcher ---- */
+  & .rz-badge:not([style*="--tint"]),
+  & .rz-badge[style*="--tint: var(--accent)"] {
+    background: var(--btn);
+    color: var(--btn-text);
+  }
+
+  /* ---- Canvas panes: the active pane gets the focus ring instead of the green frame ---- */
+  & .rz-pane::before {
+    border-color: var(--line);
+    border-radius: 10px;
+  }
+  & .rz-pane[data-focused]::after {
+    border: 1px solid var(--ring);
+    border-radius: 10px;
+    box-shadow: var(--focus-ring);
+  }
+  & .rz-pane__inner {
+    border-radius: 10px;
+  }
+  & .rz-pane__head {
+    background: var(--bg);
+  }
+  & .rz-pane[data-focused] .rz-pane__head {
+    background: color-mix(in srgb, var(--hover) 60%, var(--bg));
+  }
+  & .rz-pane__cursor[data-busy] {
+    background: var(--ok);
+  }
+  & .rz-canvas__divider--row:hover > i,
+  & .rz-canvas__divider--row:focus-visible > i,
+  & .rz-canvas__divider--col:hover > i,
+  & .rz-canvas__divider--col:focus-visible > i {
+    background: var(--ring);
+  }
+
+  /* ---- Dashboard ---- */
+  & .rz-dashboard__column {
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--hover) 55%, transparent);
+  }
+  & .rz-dashboard__column[data-over] {
+    border-color: var(--ring);
+  }
+  & .rz-dashboard__column-head h2 {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  & .rz-dashboard__column-head > span:last-child {
+    font-size: 12px;
+    font-weight: 500;
+  }
+  & .rz-dashboard__task {
+    border-radius: 10px;
+    background: var(--card);
+    box-shadow: var(--shadow-xs);
+  }
+  &:not([data-theme="dark"]) .rz-dashboard__task {
+    background: var(--bg);
+  }
+  & .rz-dashboard__task:hover {
+    border-color: var(--ring);
+  }
+  & .rz-dashboard__company {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+  & .rz-dashboard__title {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.45;
+  }
+  & .rz-dashboard__project,
+  & .rz-dashboard__date,
+  & .rz-dashboard__warning {
+    font-size: 12px;
+  }
+  & .rz-dashboard__task-foot {
+    font-size: 12px;
+  }
+  & .rz-dashboard__task-foot select {
+    background: transparent;
+    border-radius: 6px;
+  }
+  & .rz-dashboard__task-foot select:hover {
+    background: var(--hover);
+  }
+  & .rz-dashboard :is(button, select):focus-visible {
+    outline: 0;
+    box-shadow: var(--focus-ring);
+  }
+  & .rz-dashboard__toolbar select,
+  & .rz-dashboard__search {
+    border-color: var(--input);
+    border-radius: 8px;
+    box-shadow: var(--shadow-xs);
+    color: var(--text);
+    font-size: 14px;
+  }
+  & .rz-dashboard__search:focus-within {
+    outline: 0;
+    border-color: var(--ring);
+    box-shadow: var(--focus-ring);
+  }
+  & .rz-dashboard__summary {
+    font-size: 13px;
+  }
+}

@@ -1,0 +1,288 @@
+/* Minimaal — integrations. Every selector: html:root[data-design="minimaal"] <original selector>. See ../minimaal.css. */
+/*
+ * Area: Koppelingen (catalogue, connected accounts, modals), Accounts & gebruik (+ usage), Voorstellen and Profiel.
+ * Overrides of integrations.css, accounts.css, usage.css, proposals.css and profile.css live here, one block each.
+ * TSX side (only when design === "minimaal"): secondary pills instead of green ones in the catalogue and the
+ * account rows, a text action per proposal change, two pills + text actions in the provider modal, no folder paths.
+ */
+
+/* ==== Koppelingen: the catalogue is one flat list =================================================================
+   Grid of framed, tinted cards → rows on a shared grid: logo + name/description · status · action.
+   The card foot becomes `display: contents`, so status and action line up in columns across all rows (subgrid). */
+html:root[data-design="minimaal"] .rz-integrations__catalog {
+  gap: 4px;
+}
+html:root[data-design="minimaal"] .rz-integrations__cards {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  column-gap: 20px;
+  row-gap: 2px;
+}
+html:root[data-design="minimaal"] .rz-integrations__provider-card {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  align-items: center;
+  column-gap: 20px;
+  row-gap: 8px;
+  min-height: 60px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: var(--r-row);
+  background: none;
+  transition: background-color 120ms ease;
+}
+html:root[data-design="minimaal"] .rz-integrations__provider-card:hover {
+  background: var(--row);
+  transform: none;
+}
+html:root[data-design="minimaal"] .rz-integrations__card-head {
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 12px;
+}
+/* The head is disabled in the browser preview and while loading; the row stays readable (the pill shows it). */
+html:root[data-design="minimaal"] button.rz-integrations__card-head:disabled {
+  opacity: 1;
+}
+html:root[data-design="minimaal"] button.rz-integrations__card-head:focus-visible {
+  outline-offset: 3px;
+}
+/* Logo: one neutral tile for every provider, the mark in grey */
+html:root[data-design="minimaal"] .rz-integrations__brand {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: var(--r-icon);
+  background: var(--row);
+  color: var(--text2);
+}
+html:root[data-design="minimaal"] .rz-integrations__provider-card:hover .rz-integrations__brand {
+  background: var(--bg); /* stays a tile on the hovered row (like the chip on a hovered row, D:82) */
+}
+html:root[data-design="minimaal"] .rz-integrations__brand svg {
+  width: 16px;
+  height: 16px;
+}
+html:root[data-design="minimaal"] .rz-integrations__brand--gmail svg {
+  width: 17px;
+  height: 17px;
+  filter: grayscale(1);
+  opacity: 0.7;
+}
+html:root[data-design="minimaal"] .rz-integrations__brand--typesafe {
+  font-size: 17px;
+}
+html:root[data-design="minimaal"] .rz-integrations__card-copy {
+  margin: 0;
+  -webkit-line-clamp: 1;
+}
+html:root[data-design="minimaal"] .rz-integrations__card-foot {
+  display: contents;
+}
+html:root[data-design="minimaal"] .rz-integrations__card-state {
+  max-width: 240px;
+  color: var(--text2);
+}
+html:root[data-design="minimaal"] .rz-integrations__card-actions,
+html:root[data-design="minimaal"] .rz-integrations__card-foot > .rz-btn {
+  justify-self: end;
+}
+/* TypeSafe's row is drawn by Brain.tsx (outside this area) and still asks for variant="primary": draw it as the
+   secondary pill, like the other rows. */
+html:root[data-design="minimaal"] .rz-integrations__provider-card .rz-btn--primary {
+  border: 1px solid var(--line);
+  background: none;
+  color: var(--text);
+}
+html:root[data-design="minimaal"] .rz-integrations__provider-card .rz-btn--primary:disabled {
+  background-color: transparent;
+}
+/* On the hovered row the pill (and the settings icon) keep a visible hover: page colour instead of --row */
+html:root[data-design="minimaal"] .rz-integrations__provider-card .rz-btn:not(:disabled):hover,
+html:root[data-design="minimaal"] .rz-integrations__provider-card .rz-iconbtn:not(:disabled):hover {
+  background: var(--bg);
+  opacity: 1;
+}
+
+/* Narrow column: name and description on the first line, status and action underneath */
+@container rz-integrations (max-width: 600px) {
+  html:root[data-design="minimaal"] .rz-integrations__cards {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  html:root[data-design="minimaal"] .rz-integrations__card-head {
+    grid-column: 1 / -1;
+  }
+  html:root[data-design="minimaal"] .rz-integrations__card-state {
+    padding-left: 44px; /* under the name: tile 32 + gap 12 */
+  }
+}
+
+/* ---- Status line (load failure, pending Google login): no always-on fill, the dot carries the state ---- */
+html:root[data-design="minimaal"] .rz-integrations__status {
+  background: none;
+}
+html:root[data-design="minimaal"] .rz-integrations__status .rz-integrations__retry:hover {
+  background: var(--row);
+}
+html:root[data-design="minimaal"] .rz-integrations__tile {
+  background: var(--row);
+}
+
+/* ---- Gmail settings modal: the conversation list follows without a rule above it ---- */
+html:root[data-design="minimaal"] .rz-integrations__settings-sessions {
+  padding-top: 8px;
+  border-top: 0;
+}
+
+/* ---- Inside a modal the quiet lines start at the field edge (no 12px row inset); the dot sits on the text line ---- */
+html:root[data-design="minimaal"] .rz-modal .rz-integrations__note,
+html:root[data-design="minimaal"] .rz-modal .rz-integrations__foot {
+  padding: 0;
+}
+html:root[data-design="minimaal"] .rz-integrations__foot > .rz-dot {
+  margin-top: 6px;
+}
+
+/* ---- Provider modal foot: "Verbinding testen" and "Ontkoppelen" as text actions on the left ---- */
+html:root[data-design="minimaal"] .rz-integrations__foot-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ==== Accounts & gebruik ========================================================================================
+   All in Accounts.tsx: "Inloggen" is a secondary pill (only "Account toevoegen" is green), the folder of an account
+   without e-mail is a tooltip, a logged-out account shows "Log in om gebruik te zien" instead of stale bars. */
+
+/* ==== Voorstellen ==============================================================================================
+   Changes are flat rows instead of framed cards; "Overnemen" per change is a text action (TSX), "Alles overnemen"
+   stays the one green pill. No rule above the footer, no fill on moved tasks, sources as quiet text. */
+html:root[data-design="minimaal"] .rz-proposals__changes {
+  gap: 2px;
+}
+html:root[data-design="minimaal"] .rz-proposals__change {
+  padding: 12px;
+  border: 0;
+  border-radius: var(--r-row);
+}
+html:root[data-design="minimaal"] .rz-proposals__actions {
+  gap: 14px;
+  min-height: 24px;
+}
+html:root[data-design="minimaal"] .rz-proposals__take {
+  border-radius: 4px; /* shape of the focus ring */
+  font-weight: 500;
+  color: var(--text);
+}
+html:root[data-design="minimaal"] .rz-proposals__take:not(:disabled):hover {
+  color: var(--text2);
+}
+html:root[data-design="minimaal"] .rz-proposals__sources {
+  gap: 4px 8px;
+}
+html:root[data-design="minimaal"] .rz-proposals__source + .rz-proposals__source::before {
+  content: "·";
+  margin-right: 8px;
+}
+html:root[data-design="minimaal"] .rz-proposals__source {
+  height: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  line-height: 1.4;
+}
+html:root[data-design="minimaal"] .rz-proposals__order-row[data-changed] {
+  background: none;
+}
+html:root[data-design="minimaal"] .rz-proposals__order-row:not([data-changed]) .rz-proposals__order-title {
+  color: var(--text2);
+}
+/* Task proposals (`Card` from rz.tsx, only here): flat blocks instead of frames */
+html:root[data-design="minimaal"] .rz-proposals .rz-card {
+  padding: 12px;
+  border: 0;
+  border-radius: var(--r-row);
+}
+html:root[data-design="minimaal"] .rz-proposals__foot {
+  padding-top: 8px;
+  border-top: 0;
+}
+
+/* ==== Profiel · Weergave van gesprekken =========================================================================
+   Three flat options: no frames, no boxed sample. The sample is two lines in the preset's own colours, font, size
+   and line-height, straight on the page. The chosen option gets a light --line edge; green stays on the radio. */
+html:root[data-design="minimaal"] .rz-profile__presets {
+  gap: 8px;
+  margin-top: 2px;
+}
+html:root[data-design="minimaal"] .rz-profile__preset {
+  gap: 8px;
+  padding: 12px 12px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--r-row);
+  transition: background-color 120ms ease;
+}
+html:root[data-design="minimaal"] .rz-profile__preset[aria-checked="true"] {
+  border-color: var(--line);
+}
+html:root[data-design="minimaal"] .rz-profile__sample {
+  gap: 2px;
+  min-height: 44px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+html:root[data-design="minimaal"] .rz-profile__preset-foot {
+  padding: 0 6px;
+}
+/* Sliders: a 2px line with a small neutral knob instead of the native control */
+html:root[data-design="minimaal"] .rz-profile__tuning {
+  padding-top: 14px;
+}
+html:root[data-design="minimaal"] .rz-profile__range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 24px;
+}
+html:root[data-design="minimaal"] .rz-profile__range::-webkit-slider-runnable-track {
+  height: 2px;
+  border-radius: 1px;
+  background: var(--line);
+}
+html:root[data-design="minimaal"] .rz-profile__range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  margin-top: -5px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--text2);
+}
+html:root[data-design="minimaal"] .rz-profile__range:hover::-webkit-slider-thumb {
+  background: var(--text);
+}
+html:root[data-design="minimaal"] .rz-profile__range::-moz-range-track {
+  height: 2px;
+  border-radius: 1px;
+  background: var(--line);
+}
+html:root[data-design="minimaal"] .rz-profile__range::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--text2);
+}
+
+/* ==== Terugkerend (screen checked with this area; CSS only, Schedules.tsx untouched) ============================
+   The three summary cards lose their frames: label, figure and foot stand on the page; the clickable
+   "Vraagt aandacht" keeps a fill on hover only. */
+html:root[data-design="minimaal"] .rz-schedules .rz-cards {
+  gap: 8px;
+}
+html:root[data-design="minimaal"] .rz-schedules .rz-card {
+  padding: 12px;
+  border: 0;
+  border-radius: var(--r-row);
+}

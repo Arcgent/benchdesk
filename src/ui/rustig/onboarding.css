@@ -1,0 +1,123 @@
+/*
+ * Rustig area css: onboarding
+ * Welcome / first run, upgrade page, loading, connection error, no-company.
+ * Block prefix(es): rz-onboarding, rz-appstate. EVERY selector in this file starts with one of them, so the import order in
+ * index.css never matters. Shared look comes from primitives.css (via src/ui/rz.tsx): never restyle an
+ * `rz-` primitive globally from here, never use a legacy class name, never write `!important`.
+ * This file has exactly one owner package; index.css already imports it.
+ *
+ * There is no prototype for these screens (README "Niet in scope … bouw die in dezelfde stijl"). Values come from
+ * the README and the prototypes: content column D/Accounts:60-64, empty state D/Werkplek:150-155, modal form and
+ * footer D/NieuweTaak:28-43, status line README "Status". Spec: tmp/rustig/notes/other-pages.md §1.1-1.2.
+ */
+
+/* ---- Full-window frame: the second row of `.rz-app--full` (under the 44px bar). It scrolls by itself; the
+        column centres while there is room (auto margins never clip the top the way justify-content does). ---- */
+.rz-appstate {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  background: var(--bg);
+  color: var(--text);
+}
+.rz-appstate__col {
+  width: 100%;
+  max-width: calc(var(--rz-appstate-w, 480px) + 48px);
+  margin: auto;
+  padding: 12px 24px 56px; /* 12 + the 44px bar above = the 56px below */
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.rz-appstate__col--upgrade {
+  --rz-appstate-w: 520px;
+}
+.rz-appstate__head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* ---- Upgrade: conversations that still run in the previous version (row D/JeBedrijf:85) ---- */
+.rz-appstate__session {
+  --rz-row-gap: 12px;
+}
+.rz-appstate__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ---- Loading: one quiet line ---- */
+.rz-appstate__loading {
+  margin: auto;
+  padding: 32px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--fs-body);
+  color: var(--muted);
+}
+/* The loading spinner is the shared `rz-spin` utility (primitives.css). */
+
+/* ---- No company chosen (inside the shell, on PageShell): the empty state centres in the page ---- */
+.rz-appstate__page {
+  min-height: 100%;
+}
+
+/* ---- Welcome ---- */
+.rz-onboarding__checks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.rz-onboarding__check {
+  display: flex;
+  align-items: center;
+  min-height: 28px;
+  min-width: 0;
+}
+.rz-onboarding__later {
+  color: var(--muted);
+}
+.rz-onboarding__form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+.rz-onboarding__folder {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.rz-onboarding__folder .rz-input {
+  flex: 1 1 0;
+  font-size: var(--fs-meta);
+}
+.rz-onboarding__path {
+  color: var(--text2);
+}
+/* "Wat doet je bedrijf?" left, "optioneel" right, both inside the <label> */
+.rz-onboarding__field > .rz-field__label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.rz-onboarding__foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line2);
+}

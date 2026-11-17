@@ -1,0 +1,53 @@
+/*
+ * Rustig — the ONLY css entry of the app (imported once from main.tsx).
+ * Foundation-owned. Area packages never edit this file: every area file already has its line below.
+ *
+ * Cascade model
+ *   1. xterm.css is UNLAYERED and first: its `.xterm .xterm-helper-textarea` (0,2,0) has to keep beating
+ *      the `textarea {width:100%; padding; border}` element rules of base.css. Later unlayered `rz-` rules
+ *      still override xterm by order/specificity.
+ *   2. `@layer base` = base.css, element / pseudo rules only (plus `.lucide`). A layered rule loses to every
+ *      unlayered rule regardless of specificity, so an `rz-` class can restyle any element without having
+ *      to out-specify `input[type="checkbox"]`, `button:focus-visible` or `input[type="range"]`, and never
+ *      needs `!important`. (`!important` is inverted inside layers: base.css's reduced-motion block is the
+ *      single one and beats everything, as intended.)
+ *   3. Everything unlayered (tokens, primitives, area files) comes after, in this order.
+ *
+ * Never write `!important` in an `rz-` file. The pre-Rustig css (`@layer legacy`) was deleted in the
+ * integration step; the class names it defined are gone from the markup as well.
+ */
+@layer base;
+@import "@xterm/xterm/css/xterm.css";
+@import "./base.css" layer(base);
+
+@import "./tokens.css";
+@import "./primitives.css";
+
+/* Area files. Every selector in an area file starts with that area's own `rz-<area>` block, so the
+   order of these lines never matters. */
+@import "./shell.css";
+@import "./today.css";
+@import "./workplace.css";
+@import "./memory.css";
+@import "./session-files.css";
+@import "./task-info.css";
+@import "./computer.css";
+@import "./task-wizard.css";
+@import "./launcher.css";
+@import "./forms.css";
+@import "./project.css";
+@import "./projects.css";
+@import "./review.css";
+@import "./file-viewer.css";
+@import "./company.css";
+@import "./accounts.css";
+@import "./usage.css";
+@import "./profile.css";
+@import "./proposals.css";
+@import "./schedules.css";
+@import "./integrations.css";
+@import "./onboarding.css";
+@import "./overlays.css";
+@import "./minimaal.css";
+/* Default design style (data-design="shadcn"); scoped like minimaal.css, so it may sit anywhere after tokens. */
+@import "./shadcn.css";

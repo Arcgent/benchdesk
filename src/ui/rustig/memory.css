@@ -1,0 +1,143 @@
+/*
+ * Rustig area css: memory
+ * Notities van dit gesprek (modal + button).
+ * Block prefix(es): rz-memory. EVERY selector in this file starts with one of them, so the import order in
+ * index.css never matters. Shared look comes from primitives.css (via src/ui/rz.tsx): never restyle an
+ * `rz-` primitive globally from here, never use a legacy class name, never write `!important`.
+ * This file has exactly one owner package; index.css already imports it.
+ *
+ * Source: D/Werkplek:20-40 (modal), workplace.md 1.10. The frame (640px, r20, shadow, overlay) is Modal width="notes";
+ * the summary is the shared `.rz-modal__summary` (16/500). The edit mode is not drawn in the design: same grid, fields.
+ */
+
+/* Header: ONE 11.5px muted line "Notities van dit gesprek · {titel} · bijgewerkt door {assistent}, {tijd}" (D:23).
+   The <h2> stays a real heading (smokes look it up by role) but reads as part of the line. */
+.rz-memory__head {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--fs-meta);
+  line-height: 28px; /* the close button is 28px: keeps the text on its centre line */
+  color: var(--muted);
+}
+.rz-memory__heading {
+  display: inline;
+  margin: 0;
+  font-size: inherit;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: inherit;
+}
+
+/* Body: D:24 `padding:10px 22px 22px; gap:20px` (ModalBody gives the gap and the side padding). */
+.rz-memory {
+  padding-top: 10px;
+}
+
+/* Four blocks in two columns (D:26-29) */
+.rz-memory__sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px 26px;
+  min-width: 0;
+}
+.rz-memory__section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.rz-memory__label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 24px;
+  margin: 0;
+  font-size: var(--fs-meta);
+  font-weight: 400;
+  color: var(--muted);
+}
+.rz-memory__items {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+/* D:31 */
+.rz-memory__item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: start;
+  padding: 4px 0;
+  font-size: var(--fs-body);
+  line-height: 1.5;
+}
+.rz-memory__text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+  color: var(--text);
+}
+/* "Gedaan" reads quieter than what is still open (D:262) */
+.rz-memory__section[data-kind="completed"] .rz-memory__text {
+  color: var(--text2);
+}
+.rz-memory__action {
+  font-size: var(--fs-meta); /* "Als taak" 11.5/500 accent */
+  line-height: 1.5;
+  min-height: 18px;
+}
+.rz-memory__none {
+  padding: 4px 0;
+  font-size: var(--fs-meta);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* No notes yet: the design's fallback sentence in the summary slot + one quiet line */
+.rz-memory__empty {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* Edit mode: one compact field per point + remove, "Toevoegen en Enter" under each block */
+.rz-memory__edit {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px;
+  align-items: center;
+}
+.rz-memory__edit .rz-input,
+.rz-memory__add {
+  height: 32px;
+  border-radius: 10px;
+  padding-inline: 10px;
+}
+.rz-memory__add {
+  border-style: dashed;
+}
+.rz-memory__add:focus {
+  border-style: solid;
+}
+
+/* Footer (D:36): explanation left, pill(s) right. The explanation may wrap, the actions stay on the right. */
+.rz-memory__foot > .rz-hint {
+  flex: 1 1 240px;
+  min-width: 0;
+  line-height: 1.6;
+}
+.rz-memory__foot > .rz-modal__foot-actions {
+  margin-left: auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.rz-memory__goto {
+  font-size: var(--fs-meta);
+  vertical-align: baseline;
+}

@@ -1,0 +1,215 @@
+.rz-dashboard {
+  gap: 18px;
+  padding: 48px 28px 32px;
+}
+.rz-dashboard__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+.rz-dashboard__toolbar select,
+.rz-dashboard__search {
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  min-height: 36px;
+  background: var(--bg);
+  color: var(--text2);
+  font: inherit;
+}
+.rz-dashboard__toolbar select {
+  padding: 0 28px 0 10px;
+  max-width: 240px;
+  min-width: 140px;
+}
+.rz-dashboard__search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 200px;
+  padding: 0 10px;
+}
+.rz-dashboard__search input {
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  width: 100%;
+  min-width: 0;
+}
+.rz-dashboard__search:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.rz-dashboard__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 20px;
+  color: var(--muted);
+  font-size: 11.5px;
+}
+.rz-dashboard__board {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(200px, 1fr));
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 14px;
+  align-items: stretch;
+}
+.rz-dashboard__column {
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: var(--side);
+  min-width: 0;
+  min-height: 360px;
+  transition: border-color 0.15s;
+}
+.rz-dashboard__column[data-over] {
+  border-color: var(--accent);
+}
+.rz-dashboard__column-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 15px 12px;
+}
+.rz-dashboard__column-head h2 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+}
+.rz-dashboard__column-head > span:last-child {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.rz-dashboard__cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 8px 12px;
+}
+.rz-dashboard__task {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  min-width: 0;
+  overflow: hidden;
+}
+.rz-dashboard__task:hover {
+  border-color: var(--muted);
+}
+.rz-dashboard__task[data-dragging],
+.rz-dashboard__task[aria-busy="true"] {
+  opacity: 0.5;
+}
+.rz-dashboard__task-open {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  padding: 13px 12px 12px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: var(--text);
+  font: inherit;
+}
+.rz-dashboard__company {
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  overflow-wrap: anywhere;
+}
+.rz-dashboard__title {
+  font-size: 13px;
+  font-weight: 550;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.rz-dashboard__project {
+  color: var(--muted);
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+.rz-dashboard__date {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text2);
+  font-size: 10.5px;
+  line-height: 1.4;
+}
+.rz-dashboard__date[data-late],
+.rz-dashboard__warning {
+  color: var(--warn);
+}
+.rz-dashboard__warning {
+  font-size: 10.5px;
+}
+.rz-dashboard__task-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  padding: 8px 10px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 10px;
+}
+.rz-dashboard__task-foot select {
+  min-width: 0;
+  max-width: 115px;
+  border: 0;
+  background: var(--bg);
+  color: var(--text2);
+  font: inherit;
+  cursor: pointer;
+  padding: 3px;
+}
+.rz-dashboard__task-foot select:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+.rz-dashboard__column-empty {
+  color: var(--muted);
+  margin: 18px 0;
+  text-align: center;
+  font-size: 11px;
+}
+.rz-dashboard__empty {
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  text-align: center;
+  color: var(--text2);
+  padding: 24px;
+}
+.rz-dashboard :is(button, select):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+@media (max-width: 700px) {
+  .rz-dashboard {
+    padding: 48px 16px 24px;
+  }
+  .rz-dashboard__search {
+    flex-basis: 100%;
+  }
+  .rz-dashboard__toolbar select {
+    flex: 1 1 130px;
+    max-width: none;
+  }
+  .rz-dashboard__board {
+    grid-template-columns: repeat(5, minmax(240px, 1fr));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rz-dashboard__column {
+    transition: none;
+  }
+}

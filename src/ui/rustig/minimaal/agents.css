@@ -1,0 +1,621 @@
+/* Minimaal — agents. Every selector: html:root[data-design="minimaal"] <original selector>. See ../minimaal.css.
+ *
+ * Agent column, overview, agent detail (tabs), chat, skills / routines / search / settings.
+ * Flat rows (avatar 28 round, name 12/500, role muted), no frames, no dividers, fill only on hover or for the
+ * active item; status = 6px dot + text; no pulse; one green button per screen (Agents.tsx picks which). */
+
+/* ---- Agent column: stays, but on the page background without its own fill or edge ---- */
+html:root[data-design="minimaal"] .agent-roster {
+  background: var(--bg);
+  border-right: 0;
+  padding: 50px 10px 16px;
+  gap: 2px;
+}
+html:root[data-design="minimaal"] .agent-roster__head {
+  height: 28px;
+  padding: 0 0 0 12px;
+  margin-bottom: 2px;
+  font-size: var(--fs-meta);
+  font-weight: 400;
+  color: var(--muted);
+}
+html:root[data-design="minimaal"] .agent-roster__head button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-icon);
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+  transition: background-color 0.15s;
+}
+html:root[data-design="minimaal"] .agent-roster__head button:hover {
+  background: var(--row);
+  color: var(--text);
+}
+/* The company is already in the sidebar switcher and the page eyebrow. */
+html:root[data-design="minimaal"] .agent-roster__company {
+  display: none;
+}
+html:root[data-design="minimaal"] .agent-roster nav > button {
+  gap: 10px;
+  padding: 7px 12px;
+  margin-bottom: 2px;
+  border: 0;
+  border-radius: var(--r-row);
+  transition: background-color 0.15s;
+}
+html:root[data-design="minimaal"] .agent-roster nav > button:hover {
+  background: var(--row);
+}
+html:root[data-design="minimaal"] .agent-roster nav > button[aria-current="page"] {
+  background: var(--row); /* the active item: the one resting fill in the column */
+  box-shadow: none;
+}
+html:root[data-design="minimaal"] .agent-roster__identity {
+  gap: 1px;
+  flex: 1;
+}
+html:root[data-design="minimaal"] .agent-roster__identity strong {
+  font-size: var(--fs-body);
+  font-weight: 500;
+}
+html:root[data-design="minimaal"] .agent-roster__identity small {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+html:root[data-design="minimaal"] .agent-roster__archive {
+  border-top: 0;
+  padding: 8px 12px 0;
+  gap: 8px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  cursor: pointer;
+}
+html:root[data-design="minimaal"] .agent-roster__archive:hover {
+  color: var(--text2);
+}
+
+/* ---- Avatar: 28 round, soft tint of the agent colour, no edge ---- */
+html:root[data-design="minimaal"] .agent-face {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--agent-color) 18%, var(--bg));
+  color: var(--text);
+  font-size: var(--fs-col);
+  font-weight: 600;
+  line-height: 1;
+}
+html:root[data-design="minimaal"] .agent-heading {
+  gap: 10px;
+}
+
+/* ---- Status: a still 6px dot (was an endless green pulse). Running = Bezig = blue. ---- */
+html:root[data-design="minimaal"] .agent-pulse {
+  animation: none;
+  background: var(--blue);
+  vertical-align: middle;
+}
+html:root[data-design="minimaal"] .agent-roster nav > button .agent-pulse {
+  margin: 0 2px 0 0;
+}
+
+/* ---- Page head ---- */
+html:root[data-design="minimaal"] .agent-lead {
+  margin: 0;
+  font-size: var(--fs-body);
+  color: var(--text2);
+}
+html:root[data-design="minimaal"] .agent-back {
+  color: var(--muted);
+  font-size: inherit;
+}
+html:root[data-design="minimaal"] .agent-back:hover {
+  color: var(--text);
+}
+
+/* ---- Overview: the agents as flat rows ---- */
+html:root[data-design="minimaal"] .agent-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 0;
+}
+html:root[data-design="minimaal"] .agent-card {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto minmax(92px, auto);
+  column-gap: 12px;
+  row-gap: 1px;
+  align-items: center;
+  min-height: 0;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: var(--r-row);
+  background: transparent;
+  transition: background-color 0.15s;
+}
+html:root[data-design="minimaal"] .agent-card:hover {
+  background: var(--row);
+}
+html:root[data-design="minimaal"] .agent-card[data-archived] {
+  opacity: 0.55;
+}
+html:root[data-design="minimaal"] .agent-card__top {
+  display: contents;
+}
+html:root[data-design="minimaal"] .agent-card .agent-face {
+  grid-column: 1;
+  grid-row: 1 / 3;
+}
+html:root[data-design="minimaal"] .agent-card h2 {
+  grid-column: 2;
+  grid-row: 1;
+  margin: 0;
+  font-size: var(--fs-body);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+html:root[data-design="minimaal"] .agent-card p {
+  grid-column: 2;
+  grid-row: 2;
+  margin: 0;
+  font-size: var(--fs-meta);
+  line-height: 1.4;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+html:root[data-design="minimaal"] .agent-card__foot {
+  grid-column: 3;
+  grid-row: 1 / 3;
+  margin: 0;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  white-space: nowrap;
+}
+/* The whole row opens the agent: no "Openen →", no speech-bubble icon. */
+html:root[data-design="minimaal"] .agent-card__foot > svg,
+html:root[data-design="minimaal"] .agent-card__foot > span {
+  display: none;
+}
+html:root[data-design="minimaal"] .agent-card__status {
+  grid-column: 4;
+  grid-row: 1 / 3;
+  justify-self: end;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+html:root[data-design="minimaal"] .agent-card .rz-status {
+  color: var(--text2);
+}
+html:root[data-design="minimaal"] .agent-archive-toggle {
+  width: fit-content;
+  margin: -16px 0 0;
+  padding: 0 12px;
+  gap: 8px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  cursor: pointer;
+}
+html:root[data-design="minimaal"] .agent-archive-toggle:hover {
+  color: var(--text2);
+}
+/* base.css drops the ring from every input; a checkbox has no caret, so it gets the neutral ring back */
+html:root[data-design="minimaal"] .agents-layout input[type="checkbox"]:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--text) 40%, transparent);
+  outline-offset: 2px;
+}
+
+/* ---- Empty states ---- */
+html:root[data-design="minimaal"] .agent-zero {
+  padding: 56px 24px;
+}
+html:root[data-design="minimaal"] .agent-zero h2 {
+  margin: 14px 0 6px;
+  font-size: var(--fs-lead);
+  font-weight: 500;
+}
+html:root[data-design="minimaal"] .agent-zero p {
+  margin: 0 auto 20px;
+  font-size: var(--fs-body);
+  line-height: 1.6;
+}
+html:root[data-design="minimaal"] .agent-chat__empty h3 {
+  margin: 14px 0 6px;
+  font-size: var(--fs-lead);
+}
+
+/* ---- Conversation list (tab Gesprekken) and the strip above an open chat ---- */
+html:root[data-design="minimaal"] .agent-conversation-list {
+  padding-top: 0;
+}
+html:root[data-design="minimaal"] .agent-threads {
+  gap: 2px;
+}
+html:root[data-design="minimaal"] .agent-threads > button {
+  gap: 2px;
+  padding: 8px 12px;
+  border-radius: var(--r-row);
+  transition: background-color 0.15s;
+}
+html:root[data-design="minimaal"] .agent-threads > button:hover {
+  background: var(--row);
+}
+html:root[data-design="minimaal"] .agent-threads > button[aria-current="page"] {
+  background: var(--row);
+}
+html:root[data-design="minimaal"] .agent-threads > button > span {
+  font-size: var(--fs-body);
+  font-weight: 500;
+}
+html:root[data-design="minimaal"] .agent-threads small {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+html:root[data-design="minimaal"] .agents-layout .agent-workspace > .agent-threads {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+html:root[data-design="minimaal"] .agent-workspace {
+  padding-top: 0;
+}
+
+/* ---- Chat ---- */
+html:root[data-design="minimaal"] .agent-chat__head {
+  padding: 4px 0 8px;
+  border-bottom: 0;
+}
+html:root[data-design="minimaal"] .agent-chat__head h2 {
+  margin: 0 0 2px;
+  font-size: var(--fs-body);
+  font-weight: 500;
+}
+html:root[data-design="minimaal"] .agent-chat__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+html:root[data-design="minimaal"] .agent-chat__messages {
+  padding: 16px 12px 20px 0;
+}
+html:root[data-design="minimaal"] .agent-message {
+  margin: 0 0 20px;
+  font-size: var(--fs-body);
+  line-height: 1.65;
+}
+html:root[data-design="minimaal"] .agent-message p {
+  margin: 4px 0 12px;
+}
+html:root[data-design="minimaal"] .agent-message__author {
+  font-size: var(--fs-meta);
+  font-weight: 500;
+  color: var(--muted);
+}
+/* Your own message: a bubble on the right, sized to its text. "Jij" stays for screen readers only. */
+html:root[data-design="minimaal"] .agent-message--user {
+  width: fit-content;
+  max-width: min(80%, 640px);
+  margin-left: auto;
+  padding: 10px 16px;
+  background: var(--bubble);
+  border-radius: var(--r-card);
+}
+html:root[data-design="minimaal"] .agent-message--user .agent-message__author {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+html:root[data-design="minimaal"] .agent-message--user p:first-of-type {
+  margin-top: 0;
+}
+html:root[data-design="minimaal"] .agent-message--user p:last-child {
+  margin-bottom: 0;
+}
+html:root[data-design="minimaal"] .agent-message pre,
+html:root[data-design="minimaal"] .agent-request pre {
+  font-size: var(--fs-meta);
+  line-height: 1.7;
+  background: var(--term-bg);
+  color: var(--term-fg);
+  border-radius: var(--r-row);
+}
+html:root[data-design="minimaal"] .agent-message td,
+html:root[data-design="minimaal"] .agent-message th {
+  border: 0;
+  padding: 6px 16px 6px 0;
+  text-align: left;
+}
+html:root[data-design="minimaal"] .agent-message th {
+  font-size: var(--fs-col);
+  font-weight: 500;
+  color: var(--muted);
+}
+html:root[data-design="minimaal"] .agent-message--tool {
+  margin-bottom: 8px;
+  font-size: var(--fs-meta);
+}
+html:root[data-design="minimaal"] .agent-message--tool summary {
+  padding: 4px 0;
+}
+html:root[data-design="minimaal"] .agent-message--tool small {
+  margin-left: 8px;
+  font-size: var(--fs-meta);
+}
+/* An error: the red edge becomes a warn dot before the author, as every other status. */
+html:root[data-design="minimaal"] .agent-message--error {
+  border-left: 0;
+  padding-left: 0;
+}
+html:root[data-design="minimaal"] .agent-message--error .agent-message__author::before,
+html:root[data-design="minimaal"] .agent-request > strong::before,
+html:root[data-design="minimaal"] .agent-conflict > p::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: var(--warn);
+  vertical-align: middle;
+}
+html:root[data-design="minimaal"] .agent-chat__resolved {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+/* A question or permission request: no grey block and frame, a warn dot marks it. */
+html:root[data-design="minimaal"] .agent-request {
+  padding: 4px 0;
+  gap: 12px;
+  background: none;
+  border: 0;
+  border-radius: 0;
+}
+html:root[data-design="minimaal"] .agent-request > strong {
+  font-weight: 500;
+}
+html:root[data-design="minimaal"] .agent-request [aria-pressed="true"] {
+  outline: 0;
+  border-color: var(--text2);
+  background: var(--hover);
+}
+html:root[data-design="minimaal"] .agent-request [aria-pressed="true"]:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--text) 40%, transparent);
+  outline-offset: 2px;
+}
+/* The send button stays the one green button; the answer to a request is the dark pill. */
+html:root[data-design="minimaal"] .agent-request .rz-btn--primary {
+  background: var(--btn);
+  color: var(--btn-text);
+}
+html:root[data-design="minimaal"] .agent-chat__composer {
+  padding: 14px 12px 10px 18px;
+  margin: 8px 0 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-composer);
+  box-shadow: var(--shadow-composer);
+}
+html:root[data-design="minimaal"] .agent-chat__composer textarea {
+  min-height: 40px;
+  padding: 2px 0;
+  font-size: var(--fs-body);
+}
+html:root[data-design="minimaal"] .agent-chat__composer-foot {
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+html:root[data-design="minimaal"] .agent-chat__composer-foot .rz-btn--primary {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+/* ---- Tabs Geheugen / Vaardigheden / Terugkerend / Zoeken / Instellingen ---- */
+html:root[data-design="minimaal"] .agent-memory,
+html:root[data-design="minimaal"] .agent-settings,
+html:root[data-design="minimaal"] .agent-capability {
+  padding: 0;
+}
+html:root[data-design="minimaal"] .agent-section-heading {
+  gap: 10px;
+  margin-bottom: 20px;
+}
+html:root[data-design="minimaal"] .agent-section-heading > svg {
+  color: var(--muted);
+}
+html:root[data-design="minimaal"] .agent-section-heading p {
+  margin: 6px 0 0;
+}
+html:root[data-design="minimaal"] .agent-capability h2,
+html:root[data-design="minimaal"] .agent-settings h2,
+html:root[data-design="minimaal"] .agent-section-heading h2 {
+  font-size: var(--fs-lead);
+  font-weight: 500;
+}
+html:root[data-design="minimaal"] .agent-section-head {
+  min-height: 32px;
+}
+html:root[data-design="minimaal"] .agent-capability > .agent-muted {
+  margin: 6px 0 16px;
+  max-width: 560px;
+}
+html:root[data-design="minimaal"] .agent-conflict {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: var(--text2);
+}
+html:root[data-design="minimaal"] .agent-brief {
+  margin: 12px 0;
+  line-height: 1.7;
+}
+html:root[data-design="minimaal"] .agent-settings__actions {
+  gap: 6px;
+  margin: 16px 0 32px;
+}
+html:root[data-design="minimaal"] .agent-settings > .agent-capability {
+  margin-top: 40px; /* Rechten en samenwerking: its own section under the copy line */
+}
+html:root[data-design="minimaal"] .agent-memory__footer .agent-muted {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+
+/* Skills and routines: flat rows instead of framed cards */
+html:root[data-design="minimaal"] .agent-capability-card {
+  margin: 2px 0;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: var(--r-row);
+  background: transparent;
+}
+html:root[data-design="minimaal"] article.agent-capability-card {
+  transition: background-color 0.15s;
+}
+html:root[data-design="minimaal"] article.agent-capability-card:hover {
+  background: var(--row);
+}
+html:root[data-design="minimaal"] .agent-capability-card h3 {
+  font-size: var(--fs-body);
+  font-weight: 500;
+}
+html:root[data-design="minimaal"] .agent-capability-card .agent-section-head {
+  min-height: 0;
+}
+html:root[data-design="minimaal"] .agent-capability-card .agent-section-head > label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-meta);
+  color: var(--text2);
+}
+html:root[data-design="minimaal"] .agent-capability-card p {
+  margin: 4px 0 2px;
+  line-height: 1.6;
+  color: var(--text2);
+}
+html:root[data-design="minimaal"] .agent-capability-card small {
+  display: block;
+  font-size: var(--fs-meta);
+  line-height: 1.6;
+  color: var(--muted);
+}
+html:root[data-design="minimaal"] .agent-capability-card details {
+  margin-top: 4px;
+  font-size: var(--fs-meta);
+  color: var(--text2);
+}
+html:root[data-design="minimaal"] .agent-capability-card summary {
+  cursor: pointer;
+}
+html:root[data-design="minimaal"] .agent-capability-card .agent-settings__actions {
+  margin: 8px 0 0 -10px; /* the first quiet text lines up with the text above */
+  gap: 2px;
+}
+html:root[data-design="minimaal"] .agent-capability-card .agent-settings__actions .rz-btn {
+  height: 28px;
+  padding: 0 10px;
+}
+html:root[data-design="minimaal"] .agent-capability-card .agent-settings__actions .rz-btn--secondary {
+  margin: 0 6px 0 10px;
+}
+html:root[data-design="minimaal"] .agent-capability-card .rz-btn--quiet:hover {
+  background: var(--hover); /* the row itself is --row on hover */
+}
+/* An edit form (skill, routine, hand-over) sits on the page without a frame */
+html:root[data-design="minimaal"] form.agent-capability-card {
+  margin: 12px 0;
+  padding: 8px 0;
+}
+
+/* Search */
+html:root[data-design="minimaal"] .agent-search-form {
+  gap: 8px;
+  margin: 16px 0;
+}
+html:root[data-design="minimaal"] .agent-results {
+  gap: 2px;
+}
+html:root[data-design="minimaal"] .agent-results > button {
+  padding: 10px 12px;
+  border: 0;
+  border-radius: var(--r-row);
+  background: transparent;
+  transition: background-color 0.15s;
+}
+html:root[data-design="minimaal"] .agent-results > button:hover {
+  background: var(--row);
+}
+html:root[data-design="minimaal"] .agent-results strong {
+  font-size: var(--fs-body);
+  font-weight: 500;
+}
+html:root[data-design="minimaal"] .agent-results small {
+  margin-top: 2px;
+  font-size: var(--fs-meta);
+}
+html:root[data-design="minimaal"] .agent-results p {
+  margin: 4px 0 0;
+  line-height: 1.6;
+  color: var(--text2);
+}
+
+/* Permissions: groups without a frame, legend as a section label */
+html:root[data-design="minimaal"] .agent-capability fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
+html:root[data-design="minimaal"] .agent-capability legend {
+  margin-bottom: 8px;
+  padding: 0;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+html:root[data-design="minimaal"] .agent-checks {
+  gap: 10px 18px;
+}
+html:root[data-design="minimaal"] .agent-checks label,
+html:root[data-design="minimaal"] .agent-capability > label:not(.rz-field),
+html:root[data-design="minimaal"] .agent-form > label:not(.rz-field) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-body);
+  color: var(--text2);
+}
+/* Agent and new-chat modals put ModalFoot beside ModalBody (inside a <form>), so it had no inner padding and
+   the buttons touched the modal edge. Give it the docked footer's padding (primitives .rz-modal__foot--docked). */
+html:root[data-design="minimaal"] .rz-modal > form > .agent-form + .rz-modal__foot {
+  padding: 12px 22px 18px;
+}
+/* A lone button in a form grid (Overdragen, Annuleren, Rechten opslaan) keeps its pill width */
+html:root[data-design="minimaal"] .agent-form > .rz-btn {
+  justify-self: start;
+}
+html:root[data-design="minimaal"] .agent-form input[type="color"] {
+  border-radius: var(--r-icon);
+}
+
+/* ---- Small screens: the column becomes a strip above the page (agents.css), without the dividing line ---- */
+@media (max-width: 720px) {
+  html:root[data-design="minimaal"] .agent-roster {
+    padding: 12px;
+    border-bottom: 0;
+  }
+  html:root[data-design="minimaal"] .agent-roster nav > button {
+    margin-bottom: 0;
+  }
+}

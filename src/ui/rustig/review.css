@@ -1,0 +1,221 @@
+/*
+ * Rustig area css: review
+ * Beoordelen: left column (criteria, delivered files, footer) and the right pane frame.
+ * Block prefix(es): rz-review. EVERY selector in this file starts with one of them, so the import order in
+ * index.css never matters. Shared look comes from primitives.css (via src/ui/rz.tsx): never restyle an
+ * `rz-` primitive globally from here, never use a legacy class name, never write `!important`.
+ * This file has exactly one owner package; index.css already imports it.
+ */
+
+/* ---- Page frame (D/Beoordelen:60,164). The root also carries `rz-main` (it hosts the same "Zijbalk tonen" button
+   as PageShell); this block turns that grid into one full-bleed cell.
+   It is a size container: the split follows the width of the content column, so it behaves the same with the
+   sidebar open (1100px window = 840px column = still two panes) and closed. ---- */
+.rz-review {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  container: rz-review / inline-size;
+  overflow: hidden;
+}
+.rz-review__grid {
+  display: grid;
+  grid-template-columns: minmax(300px, 42%) minmax(320px, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ---- Left column: scroll area + footer (D/Beoordelen:61-62) ---- */
+.rz-review__left {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-width: 0;
+  min-height: 0;
+}
+.rz-review__scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+  min-height: 0;
+  padding: 48px 28px 16px;
+  overflow-y: auto;
+}
+.rz-review__scroll > * {
+  flex: none;
+}
+
+/* Header block (D/Beoordelen:63-67) */
+.rz-review__head {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.rz-review__head .rz-crumbs {
+  min-width: 0;
+}
+.rz-review__head .rz-crumbs__item:first-child:not(:last-child) {
+  flex: none;
+  max-width: 50%;
+}
+.rz-review__head .rz-crumbs__link,
+.rz-review__head .rz-crumbs__item > span[aria-current] {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rz-review__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  min-width: 0;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+.rz-review__meta > span {
+  min-width: 0;
+}
+/* The assistant's own summary: not in the design, kept from the old page. */
+.rz-review__summary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+.rz-review__summary > p {
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  color: var(--text2);
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+}
+.rz-review__summary > p[data-clamped] {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+}
+
+/* "Klaar als" rows (D/Beoordelen:71-79). The prototype sets no line-height here (= normal). */
+.rz-review__criterion {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-radius: var(--r-row);
+}
+.rz-review__criterion[data-selected] {
+  background: var(--row);
+}
+.rz-review__criterion-row {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: start;
+  padding: 10px 12px;
+  border-radius: var(--r-row);
+  cursor: pointer;
+}
+.rz-review__criterion-row:hover {
+  background: var(--row);
+}
+.rz-review__criterion-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  min-width: 0;
+  padding-top: 4px;
+}
+.rz-review__criterion-title {
+  max-width: 100%;
+  font-size: var(--fs-body);
+  font-weight: 500;
+  line-height: normal;
+  color: var(--text);
+  text-align: left;
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+}
+.rz-review__note {
+  font-size: var(--fs-meta);
+  line-height: normal;
+  color: var(--muted);
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+}
+/* The note under a point that is not approved yet, the fallback included (D/Beoordelen:153). */
+.rz-review__note[data-open] {
+  color: var(--warn);
+}
+.rz-review__line {
+  margin-top: 3px;
+  line-height: normal;
+  flex: none;
+}
+.rz-review__comment {
+  padding: 0 12px 12px 52px;
+}
+
+/* "Opgeleverd" rows (D/Beoordelen:86): Row size "sm", 42px instead of 44 */
+.rz-review__file {
+  --rz-row-h: 42px;
+}
+
+/* Footer (D/Beoordelen:90-93) */
+.rz-review__foot {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding: 14px 28px 22px;
+  border-top: 1px solid var(--line2);
+}
+.rz-review__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+.rz-review__actions > .rz-btn {
+  max-width: 100%;
+  overflow: hidden;
+}
+.rz-review__footnote {
+  font-size: var(--fs-meta);
+  line-height: normal;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* ---- Right pane: the host only frames and sizes the viewer (decision C22) ---- */
+.rz-review__viewer {
+  border-left: 1px solid var(--line2);
+}
+
+/* ---- Stacked below a 840px content column (= a 1100px window with the 260px sidebar, D/Beoordelen:129,164).
+   The page scrolls as a whole; the footer follows the content instead of overlapping it. ---- */
+@container rz-review (max-width: 839px) {
+  .rz-review__grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  .rz-review__left {
+    display: block;
+  }
+  .rz-review__scroll {
+    overflow: visible;
+  }
+  .rz-review__viewer {
+    border-left: 0;
+    min-height: 60vh;
+  }
+}

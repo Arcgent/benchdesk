@@ -1,0 +1,633 @@
+/* Minimaal — brain. Every selector: html:root[data-design="minimaal"] <original selector>. See ../minimaal.css. */
+/*
+ * Area: Bedrijfsbrein (search, wiki pages, review queue, connections graph). Overrides of rustig/brain.css.
+ * TSX side (Brain.tsx, only when design === "minimaal"): the counts are the head meta; "Netwerk"/"Pagina’s" (quiet)
+ * and "Wiki bijwerken" (ghost) sit in the head; one search field with the submit icon inside; the review queue is a
+ * section label ("Ter beoordeling · n", explanation as tooltip) with its search behind an icon and a quiet filter
+ * chip, the first 6 rows + "Alles tonen"; open items are exclusive (<details name>) so there is one green
+ * "Goedkeuren" at a time, the other actions are quiet text buttons; page type and version history are chip selects;
+ * no "Versie N" and no search diagnostics as visible text (tooltips); a flat JSON source reads as key/value rows.
+ */
+
+/* ==== Shared text ============================================================================================= */
+html:root[data-design="minimaal"] .brain-meta {
+  margin: 0;
+  font-size: var(--fs-meta);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* ==== Search: one quiet pill field, the magnifier inside is the submit button ================================= */
+html:root[data-design="minimaal"] .brain-search {
+  position: relative;
+  display: block;
+  margin-top: -8px; /* belongs to the head: 24px under the meta line instead of the page gap */
+}
+html:root[data-design="minimaal"] .brain-search .rz-input {
+  height: 36px;
+  padding: 0 14px 0 38px;
+  border-radius: var(--r-pill);
+}
+html:root[data-design="minimaal"] .brain-search__go {
+  position: absolute;
+  top: 4px;
+  left: 5px;
+  border-radius: var(--r-pill);
+}
+html:root[data-design="minimaal"] .brain-search__go:hover {
+  background: var(--row);
+}
+
+/* ==== Review queue: a plain section, flat rows, no card and no nested boxes =================================== */
+html:root[data-design="minimaal"] .brain-suggestions {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
+html:root[data-design="minimaal"] .brain-suggestions > .rz-label {
+  margin-bottom: 2px;
+}
+html:root[data-design="minimaal"] .brain-suggestions > .rz-label .brain-suggestions__title {
+  margin: 0;
+  font-size: var(--fs-meta);
+  font-weight: 400;
+  letter-spacing: normal;
+  line-height: 1;
+  color: var(--muted);
+}
+html:root[data-design="minimaal"] .brain-suggestions .rz-label__right {
+  gap: 2px;
+}
+html:root[data-design="minimaal"] .brain-review-search {
+  width: 210px;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: var(--r-pill);
+  font-size: var(--fs-meta);
+}
+/* Quiet chip over a native select (page type, review filter, version history) */
+html:root[data-design="minimaal"] .brain-filter {
+  height: 28px;
+  padding: 0 10px 0 12px;
+  gap: 6px;
+  font-size: var(--fs-meta);
+  color: var(--text2);
+}
+html:root[data-design="minimaal"] .brain-review-list {
+  max-height: none;
+  overflow: visible;
+  scrollbar-gutter: auto;
+}
+html:root[data-design="minimaal"] .brain-review-list:empty::after {
+  display: block;
+  padding: 6px 12px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+html:root[data-design="minimaal"] .brain-review-more {
+  align-self: flex-start;
+  height: 28px;
+  margin-top: 2px;
+  padding: 0 12px;
+  border-radius: var(--r-pill);
+}
+html:root[data-design="minimaal"] .brain-suggestions > .brain-meta {
+  padding: 6px 12px 0;
+}
+
+/* One row per item: custom chevron, title, quiet kind on the right. Background only on hover. */
+html:root[data-design="minimaal"] .brain-suggestion {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-row);
+}
+html:root[data-design="minimaal"] .brain-suggestion summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  padding: 8px 12px;
+  border-radius: var(--r-row);
+  list-style: none;
+  font-size: var(--fs-body);
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text);
+  transition: background-color 0.12s ease;
+}
+html:root[data-design="minimaal"]
+  .brain-suggestion
+  summary::-webkit-details-marker {
+  display: none;
+}
+html:root[data-design="minimaal"] .brain-suggestion summary::before {
+  content: "";
+  flex: none;
+  width: 12px;
+  height: 12px;
+  background: var(--muted);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E")
+    center / 12px 12px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E")
+    center / 12px 12px no-repeat;
+}
+html:root[data-design="minimaal"] .brain-suggestion[open] > summary::before {
+  transform: rotate(90deg);
+}
+html:root[data-design="minimaal"] .brain-suggestion summary:hover {
+  background: var(--row);
+}
+html:root[data-design="minimaal"] .brain-suggestion summary > span {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+html:root[data-design="minimaal"] .brain-suggestion summary small {
+  display: inline;
+  flex: none;
+  margin: 0;
+  font-size: var(--fs-meta);
+  font-weight: 400;
+  color: var(--muted);
+  white-space: nowrap;
+}
+/* Open item: its content hangs under the title (12 padding + 12 chevron + 10 gap), no box around it. */
+html:root[data-design="minimaal"] .brain-suggestion[open] {
+  padding: 0 12px 18px 34px;
+}
+html:root[data-design="minimaal"] .brain-suggestion[open] > summary {
+  margin: 0 -12px 0 -34px;
+}
+html:root[data-design="minimaal"]
+  .brain-suggestion[open]
+  > .brain-meta:first-of-type {
+  margin-top: 4px;
+}
+html:root[data-design="minimaal"] .brain-suggestion h3 {
+  margin: 14px 0 2px;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--text);
+}
+/* A single change repeats the row title: leave it out. */
+html:root[data-design="minimaal"]
+  [data-test="wiki-suggestion"]
+  > section:only-of-type
+  > h3 {
+  display: none;
+}
+html:root[data-design="minimaal"] .brain-suggestion h4 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 2px;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--text2);
+}
+html:root[data-design="minimaal"] .brain-suggestion .brain-section {
+  padding: 10px 0 0;
+}
+html:root[data-design="minimaal"] .brain-suggestion .rz-field {
+  margin: 12px 0 8px;
+}
+
+/* Draft preview: label + title + text on the page. No frame, no green bar, no fill. */
+html:root[data-design="minimaal"] .brain-draft-preview {
+  margin-top: 12px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+html:root[data-design="minimaal"] .brain-draft-label {
+  margin-bottom: 4px;
+  font-size: var(--fs-meta);
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--muted);
+}
+html:root[data-design="minimaal"] .brain-draft-preview > h3 {
+  margin: 0 0 4px;
+  font-size: var(--fs-lead);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+html:root[data-design="minimaal"] .brain-draft-preview .brain-section {
+  padding: 0;
+}
+
+/* Actions: one green pill, the rest quiet text buttons */
+html:root[data-design="minimaal"] .brain-actions {
+  margin-top: 14px;
+  gap: 2px;
+}
+html:root[data-design="minimaal"] .brain-actions .rz-btn--primary {
+  margin-right: 6px;
+}
+html:root[data-design="minimaal"] .brain-actions .rz-btn--quiet {
+  padding: 0 10px;
+}
+
+/* ==== Wiki text (page sections and review items) =============================================================== */
+html:root[data-design="minimaal"] .brain-section {
+  padding: 0;
+  border-bottom: 0;
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  color: var(--text);
+}
+html:root[data-design="minimaal"] .brain-section p {
+  margin: 4px 0;
+}
+html:root[data-design="minimaal"] .brain-section :is(h1, h2, h3, h4, h5, h6) {
+  margin: 12px 0 2px;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  letter-spacing: normal;
+  line-height: 1.4;
+}
+html:root[data-design="minimaal"] .brain-section :is(ul, ol) {
+  margin: 4px 0;
+  padding-left: 18px;
+}
+html:root[data-design="minimaal"] .brain-section :is(code, pre) {
+  font-family: var(--mono);
+  font-size: var(--fs-meta);
+}
+html:root[data-design="minimaal"] .brain-section a {
+  color: inherit;
+  text-underline-offset: 2px;
+}
+
+/* Status: 6px dot + text in --text2 (was a bordered pill, conflict in a colour outside the palette) */
+html:root[data-design="minimaal"] .brain-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  font-size: var(--fs-meta);
+  font-weight: 400;
+  letter-spacing: normal;
+  color: var(--text2);
+  white-space: nowrap;
+}
+html:root[data-design="minimaal"] .brain-status::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+html:root[data-design="minimaal"] .brain-status-decision::before {
+  background: var(--blue);
+}
+html:root[data-design="minimaal"] .brain-status-conflict,
+html:root[data-design="minimaal"] .brain-status-uncertain {
+  color: var(--text2);
+}
+html:root[data-design="minimaal"] .brain-status-conflict::before,
+html:root[data-design="minimaal"] .brain-status-uncertain::before {
+  background: var(--warn);
+}
+html:root[data-design="minimaal"] .brain-status-superseded {
+  opacity: 0.55;
+}
+
+/* Sources "1 2 · Corrigeren", related pages "Doelgroep →", graph "Herstellen": text actions, fill on hover only */
+html:root[data-design="minimaal"] .brain-citations {
+  gap: 0;
+  margin-top: 6px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+html:root[data-design="minimaal"] .brain-citations > span {
+  margin-right: 4px;
+}
+html:root[data-design="minimaal"] .brain-citations button,
+html:root[data-design="minimaal"] .brain-related button,
+html:root[data-design="minimaal"] .brain-graph-controls button {
+  height: 24px;
+  min-width: 24px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: var(--r-icon);
+  background: none;
+  font-size: var(--fs-meta);
+  color: var(--text2);
+  transition: background-color 0.12s ease;
+}
+html:root[data-design="minimaal"] .brain-citations button:hover,
+html:root[data-design="minimaal"] .brain-related button:hover,
+html:root[data-design="minimaal"] .brain-graph-controls button:hover {
+  background: var(--row);
+  color: var(--text);
+}
+html:root[data-design="minimaal"] .brain-related {
+  gap: 2px;
+  margin: 4px 0 0 -8px;
+}
+html:root[data-design="minimaal"] .brain-related button {
+  font-size: var(--fs-body);
+}
+
+/* A source opened from a citation or "Bron bekijken": a quiet block, no frame */
+html:root[data-design="minimaal"] .brain-source {
+  margin-top: 16px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
+html:root[data-design="minimaal"] .brain-source .brain-detail-head {
+  justify-content: space-between;
+  gap: 12px;
+}
+html:root[data-design="minimaal"] .brain-source h3 {
+  margin: 0;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--text);
+}
+html:root[data-design="minimaal"] .brain-source .brain-detail-head .rz-btn {
+  height: 28px;
+  padding: 0 10px;
+}
+html:root[data-design="minimaal"] .brain-source pre {
+  max-height: 320px;
+  margin: 6px 0 0;
+  padding: 0;
+  background: none;
+  font-family: var(--mono);
+  font-size: var(--fs-meta);
+  line-height: 1.6;
+  color: var(--text2);
+}
+html:root[data-design="minimaal"] .brain-source-fields {
+  display: grid;
+  grid-template-columns: minmax(72px, max-content) minmax(0, 1fr);
+  gap: 4px 20px;
+  margin: 6px 0 0;
+  font-size: var(--fs-body);
+  line-height: 1.5;
+}
+html:root[data-design="minimaal"] .brain-source-fields > div {
+  display: contents;
+}
+html:root[data-design="minimaal"] .brain-source-fields dt {
+  font-size: var(--fs-meta);
+  line-height: 18px;
+  color: var(--muted);
+}
+html:root[data-design="minimaal"] .brain-source-fields dd {
+  margin: 0;
+  color: var(--text);
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+/* ==== Pages: list left, page right. No divider between them. ================================================= */
+html:root[data-design="minimaal"] .brain-layout {
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 36px;
+  margin-top: 0;
+}
+html:root[data-design="minimaal"] .brain-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding-right: 0;
+  border-right: 0;
+}
+html:root[data-design="minimaal"] .brain-list > .brain-filter {
+  align-self: flex-start;
+  margin: 0 0 6px 2px;
+}
+html:root[data-design="minimaal"] .brain-list > p {
+  margin: 0;
+  padding: 4px 12px;
+  font-size: var(--fs-meta);
+  line-height: 1.5;
+  color: var(--muted);
+}
+html:root[data-design="minimaal"] .brain-list-item {
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: var(--r-row);
+  transition: background-color 0.12s ease;
+}
+html:root[data-design="minimaal"] .brain-list-item:hover {
+  background: var(--row);
+}
+html:root[data-design="minimaal"] .brain-list-item[aria-current="page"] {
+  background: var(--hover);
+}
+html:root[data-design="minimaal"] .brain-list-item strong {
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--text);
+}
+html:root[data-design="minimaal"] .brain-list-item small {
+  margin-top: 2px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+html:root[data-design="minimaal"] .brain-detail {
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+html:root[data-design="minimaal"] .brain-detail > .brain-detail-head {
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 32px;
+}
+html:root[data-design="minimaal"] .brain-detail h2 {
+  margin: 0;
+  font-size: var(--fs-title);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+html:root[data-design="minimaal"] .brain-page-actions {
+  gap: 2px;
+}
+html:root[data-design="minimaal"] .brain-page-actions .rz-btn {
+  height: 30px;
+  padding: 0 10px;
+}
+html:root[data-design="minimaal"] .brain-page-actions .rz-btn svg {
+  width: 14px;
+  height: 14px;
+}
+html:root[data-design="minimaal"]
+  .brain-page-actions
+  .rz-btn[aria-pressed="true"] {
+  color: var(--text);
+}
+html:root[data-design="minimaal"] .brain-section > .brain-detail-head {
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 2px;
+}
+html:root[data-design="minimaal"] .brain-section > .brain-detail-head h3 {
+  margin: 0;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--text2);
+}
+html:root[data-design="minimaal"] .brain-detail .brain-actions .rz-btn {
+  height: 30px;
+}
+
+/* No page chosen yet */
+html:root[data-design="minimaal"] .brain-empty {
+  max-width: 440px;
+  padding: 6px 0;
+  color: var(--text2);
+}
+html:root[data-design="minimaal"] .brain-empty > svg {
+  width: 20px;
+  height: 20px;
+  color: var(--muted);
+}
+html:root[data-design="minimaal"] .brain-detail .brain-empty h2 {
+  margin: 10px 0 4px;
+  font-size: var(--fs-lead);
+  font-weight: 500;
+  color: var(--text);
+}
+html:root[data-design="minimaal"] .brain-empty p {
+  margin: 0;
+  font-size: var(--fs-body);
+  line-height: 1.6;
+}
+
+/* ==== Connections graph: no frame, no fill; greys only ======================================================= */
+html:root[data-design="minimaal"] .brain-graph {
+  margin-top: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+html:root[data-design="minimaal"] .brain-graph-controls {
+  gap: 16px;
+  height: 28px;
+  padding: 0 0 0 12px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+html:root[data-design="minimaal"] .brain-graph-controls label {
+  gap: 8px;
+  margin-left: auto;
+}
+html:root[data-design="minimaal"] .brain-graph-controls input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 110px;
+  height: 20px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+html:root[data-design="minimaal"]
+  .brain-graph-controls
+  input[type="range"]::-webkit-slider-runnable-track {
+  height: 2px;
+  border-radius: 1px;
+  background: var(--line);
+}
+html:root[data-design="minimaal"]
+  .brain-graph-controls
+  input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  margin-top: -5px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--text2);
+}
+html:root[data-design="minimaal"]
+  .brain-graph-controls
+  input[type="range"]:hover::-webkit-slider-thumb {
+  background: var(--text);
+}
+html:root[data-design="minimaal"]
+  .brain-graph-controls
+  input[type="range"]:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--text) 30%, transparent);
+}
+html:root[data-design="minimaal"]
+  .brain-graph-controls
+  input[type="range"]::-moz-range-track {
+  height: 2px;
+  border-radius: 1px;
+  background: var(--line);
+}
+html:root[data-design="minimaal"]
+  .brain-graph-controls
+  input[type="range"]::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--text2);
+}
+/* Node colours come as SVG attributes; CSS wins over presentation attributes without !important. */
+html:root[data-design="minimaal"] .brain-node circle {
+  fill: var(--text2);
+  stroke: none;
+  transition: fill 0.12s ease;
+}
+html:root[data-design="minimaal"] .brain-node:hover circle,
+html:root[data-design="minimaal"] .brain-node[aria-pressed="true"] circle {
+  fill: var(--text);
+}
+html:root[data-design="minimaal"] .brain-node:focus circle {
+  stroke: none;
+}
+html:root[data-design="minimaal"] .brain-node:focus-visible circle {
+  stroke: color-mix(in srgb, var(--text) 40%, transparent);
+  stroke-width: 4;
+}
+/* The drawing is scaled down (viewBox 800 wide, max-height 340px ≈ 0.75): 15 units ≈ 11px on screen. */
+html:root[data-design="minimaal"] .brain-node text {
+  fill: var(--text2);
+  font: 15px var(--font);
+}
+html:root[data-design="minimaal"] .brain-edge {
+  stroke: var(--muted);
+  stroke-opacity: 0.45;
+}
+html:root[data-design="minimaal"] .brain-graph > p {
+  margin: 0;
+  padding: 0 12px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+
+@media (max-width: 800px) {
+  html:root[data-design="minimaal"] .brain-layout {
+    grid-template-columns: 1fr;
+  }
+  html:root[data-design="minimaal"] .brain-list {
+    max-height: 240px;
+    overflow: auto;
+  }
+}

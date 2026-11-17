@@ -1,0 +1,20 @@
+# Dependencies and build output
+node_modules/
+dist/
+release/
+release-*/
+
+# Working and generated files
+tmp/
+output/
+.werk-results/
+docs/rustig/
+
+# Local configuration and secrets
+.env
+.env.*
+.claude/
+
+# System
+.DS_Store
+*.log

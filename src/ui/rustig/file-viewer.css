@@ -1,0 +1,357 @@
+/*
+ * Rustig area css: file-viewer
+ * FileViewer: tab bar, Leesweergave (rz-prose), Bron with line numbers, highlighted line. Hosts only size it.
+ * Block prefix(es): rz-fileviewer, rz-prose. EVERY selector in this file starts with one of them, so the import order in
+ * index.css never matters. Shared look comes from primitives.css (via src/ui/rz.tsx): never restyle an
+ * `rz-` primitive globally from here, never use a legacy class name, never write `!important`.
+ * This file has exactly one owner package; index.css already imports it.
+ */
+
+/* ---- Frame. Fills a grid cell (Beoordelen) and a flex column (file modal, files panel) on its own. A host may
+   set `--rz-fileviewer-bg`; everything else about the inside is this file's business. ---- */
+.rz-fileviewer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  background: var(--rz-fileviewer-bg, var(--side));
+  color: var(--text);
+}
+
+/* ---- Tab bar 48px, no bottom line (D/Beoordelen:97-105). Without file tabs (file modal, files panel) it only holds
+   the view switch and shrinks to 40px; a host may set `--rz-fileviewer-bar-h` / `--rz-fileviewer-bar-px` instead. ---- */
+.rz-fileviewer__bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: var(--rz-fileviewer-bar-h, 48px);
+  padding: 0 var(--rz-fileviewer-bar-px, 20px);
+  min-width: 0;
+}
+.rz-fileviewer__bar:not(:has(.rz-fileviewer__tabs)) {
+  height: var(--rz-fileviewer-bar-h, 40px);
+}
+.rz-fileviewer__tabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  margin: -4px;
+  padding: 4px; /* room for the focus ring inside the scroller */
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.rz-fileviewer__tabs::-webkit-scrollbar {
+  display: none;
+}
+.rz-fileviewer__tab {
+  display: block;
+  flex: none;
+  max-width: 240px;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-family: var(--mono);
+  font-size: var(--fs-meta);
+  line-height: 30px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rz-fileviewer__tab:hover {
+  color: var(--text);
+}
+.rz-fileviewer__tab[aria-pressed="true"],
+.rz-fileviewer__tab[data-current] {
+  color: var(--text);
+  background: var(--row);
+}
+.rz-fileviewer__tools {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: none;
+  margin-left: auto;
+  font-size: var(--fs-meta);
+}
+.rz-fileviewer__open:hover {
+  background: none; /* D/Beoordelen:104: only the colour changes */
+}
+
+/* ---- Content (D/Beoordelen:107) ---- */
+.rz-fileviewer__body {
+  min-width: 0;
+  min-height: 0;
+  padding: 8px 20px 32px;
+  overflow: auto;
+}
+.rz-fileviewer__body--flush {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+.rz-fileviewer__frame {
+  display: block;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 420px;
+  border: 0;
+}
+.rz-fileviewer__image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 12px auto 0;
+  border-radius: 8px;
+}
+.rz-fileviewer__note {
+  max-width: 620px;
+  margin: 8px auto 0;
+  padding: 3px 10px;
+  font-size: var(--fs-body);
+  color: var(--muted);
+}
+.rz-fileviewer__note--error {
+  color: var(--warn);
+}
+.rz-fileviewer__empty {
+  min-height: 100%;
+  justify-content: center;
+  margin: 0 auto;
+}
+.rz-fileviewer__empty .rz-empty__title {
+  font-size: var(--fs-body);
+  letter-spacing: 0;
+}
+
+/* ---- Bron: line numbers 28px + mono 11.5 (D/Beoordelen:116-118) ---- */
+.rz-fileviewer__source {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--mono);
+  font-size: var(--fs-meta);
+  line-height: 1.75;
+  color: var(--text2);
+}
+.rz-fileviewer__line {
+  display: grid;
+  grid-template-columns: max(28px, var(--rz-fileviewer-no, 0px)) minmax(0, 1fr);
+  gap: 10px;
+  padding: 0 8px;
+  border-radius: 6px;
+}
+.rz-fileviewer__no {
+  color: var(--muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+}
+.rz-fileviewer__line > code {
+  font-family: inherit;
+  font-size: inherit;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.rz-fileviewer__line[data-heading] > code {
+  color: var(--text);
+}
+.rz-fileviewer__source[data-pick] > .rz-fileviewer__line {
+  cursor: default;
+}
+
+/* ---- Highlighted line / block, both views (D/Beoordelen:159-160) ---- */
+.rz-fileviewer__line[data-marked],
+.rz-prose [data-marked] {
+  background: var(--hover);
+  box-shadow: inset 3px 0 0 var(--warn);
+}
+/* A table row cannot carry an inset shadow: its first cell draws the bar. */
+.rz-prose tr[data-marked] {
+  box-shadow: none;
+}
+.rz-prose tr[data-marked] > :first-child {
+  box-shadow: inset 3px 0 0 var(--warn);
+}
+
+/* ---- Leesweergave (D/Beoordelen:109-111,159): every block is one padded, rounded box, so a highlight reads the
+   same on a heading, a paragraph, a list item and a code block. ---- */
+.rz-prose {
+  max-width: 620px;
+  margin: 0 auto;
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  color: var(--text);
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+}
+.rz-prose[data-pick] [data-line] {
+  cursor: default;
+}
+.rz-prose h1,
+.rz-prose h2,
+.rz-prose h3,
+.rz-prose h4,
+.rz-prose h5,
+.rz-prose h6,
+.rz-prose p,
+.rz-prose li,
+.rz-prose pre {
+  margin: 4px 0 0;
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: var(--fs-body);
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0;
+}
+.rz-prose h1 {
+  margin-top: 8px; /* every h1, as drawn (D/Beoordelen:159) */
+  font-size: var(--fs-title);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.rz-prose h2 {
+  margin-top: 18px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.rz-prose h3 {
+  margin-top: 14px;
+  font-weight: 600;
+}
+.rz-prose h4,
+.rz-prose h5,
+.rz-prose h6 {
+  margin-top: 12px;
+  font-weight: 500;
+  color: var(--text2);
+}
+.rz-prose strong {
+  font-weight: 600;
+}
+.rz-prose del {
+  color: var(--muted);
+}
+.rz-prose ul,
+.rz-prose ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: rz-prose-li;
+}
+.rz-prose li {
+  position: relative;
+  padding-left: 28px;
+  counter-increment: rz-prose-li;
+}
+.rz-prose li::before {
+  position: absolute;
+  top: 3px;
+  left: 0;
+  width: 22px;
+  text-align: right;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.rz-prose ul > li::before {
+  content: "•";
+}
+.rz-prose ol > li::before {
+  content: counter(rz-prose-li) ".";
+}
+/* A loose item: its paragraphs are the blocks, the item itself is only the indent. */
+.rz-prose li:has(> p) {
+  margin-top: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.rz-prose li:has(> p)::before {
+  top: 7px;
+}
+.rz-prose li > p {
+  margin-left: -10px;
+}
+/* Task list (GFM): the box replaces the bullet. */
+.rz-prose li:has(> input)::before {
+  content: none;
+}
+.rz-prose li:has(> input) {
+  padding-left: 10px;
+}
+.rz-prose li > input {
+  display: inline-grid;
+  margin-right: 6px;
+  vertical-align: -3px;
+}
+.rz-prose blockquote {
+  margin: 4px 0 0 10px;
+  padding: 0 0 0 4px;
+  border-left: 2px solid var(--line);
+  color: var(--text2);
+}
+.rz-prose pre {
+  margin-top: 8px;
+  padding: 10px 12px;
+  background: var(--bubble);
+  font-family: var(--mono);
+  font-size: var(--fs-meta);
+  line-height: 1.7;
+  white-space: pre;
+  overflow-x: auto;
+  overflow-wrap: normal;
+}
+.rz-prose code {
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: var(--bubble);
+  font-family: var(--mono);
+  font-size: var(--fs-col);
+}
+.rz-prose pre code {
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  font-size: inherit;
+}
+.rz-prose table {
+  display: block;
+  width: max-content;
+  max-width: calc(100% - 20px);
+  margin: 8px 10px 0;
+  border-collapse: collapse;
+  overflow-x: auto;
+  font-size: var(--fs-body);
+}
+.rz-prose th,
+.rz-prose td {
+  padding: 5px 10px;
+  border-bottom: 1px solid var(--line2);
+  text-align: left;
+  vertical-align: top;
+}
+.rz-prose th {
+  border-bottom-color: var(--line);
+  font-size: var(--fs-col);
+  font-weight: 400;
+  color: var(--muted);
+}
+.rz-prose hr {
+  margin: 14px 10px 10px;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+.rz-prose__link {
+  display: inline;
+  color: var(--text);
+  text-align: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--muted);
+  text-underline-offset: 2px;
+  white-space: normal;
+}
+.rz-prose__link:hover {
+  text-decoration-color: var(--text);
+}

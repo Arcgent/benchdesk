@@ -1,0 +1,282 @@
+/*
+ * Rustig area css: task-wizard
+ * Uitgebreide taak: 2-step modal.
+ * Block prefix(es): rz-task-wizard. EVERY selector in this file starts with one of them, so the import order in
+ * index.css never matters. Shared look comes from primitives.css (via src/ui/rz.tsx): never restyle an
+ * `rz-` primitive globally from here, never use a legacy class name, never write `!important`.
+ * This file has exactly one owner package; index.css already imports it.
+ *
+ * Blocks: `rz-task-wizard` (TaskWizard.tsx + TaskFields.tsx, design D = "Nieuwe Taak Rustig.dc.html") and
+ * `rz-task-wizard-schedule` / `rz-task-wizard-history` (TaskSchedule.tsx: the "fields" variant inside the task
+ * editor and the schedule info of the Taakinfo column, both rendered OUTSIDE the wizard modal).
+ * The frame (overlay, 600px panel r20, head, body gap 20, footer, steps) is the Modal primitive.
+ */
+
+/* ---- Step 1 · Taak (D:28-44) ---- */
+.rz-task-wizard__body--who {
+  gap: 18px; /* D:47 */
+}
+.rz-task-wizard__title {
+  line-height: 1.2; /* D:29: 18/500, no box */
+}
+.rz-task-wizard__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.rz-task-wizard__chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px; /* D:30 */
+  min-width: 0;
+}
+.rz-task-wizard__chip {
+  max-width: 100%; /* a long goal title ends in an ellipsis instead of widening the modal */
+}
+.rz-task-wizard__chip--late {
+  color: var(--warn);
+}
+.rz-task-wizard__chip--clearable {
+  padding-right: 30px; /* room for the 22px clear button */
+}
+.rz-task-wizard__chipwrap {
+  position: relative;
+  display: inline-flex;
+  min-width: 0;
+  max-width: 100%;
+}
+.rz-task-wizard__chipclear {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 1; /* above the date input that covers the chip */
+}
+.rz-task-wizard__chiphint {
+  flex-basis: 100%;
+  padding: 2px 2px 0;
+}
+.rz-task-wizard__files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+.rz-task-wizard__file {
+  max-width: 220px;
+  padding-right: 3px;
+}
+.rz-task-wizard__file > svg {
+  color: var(--muted);
+}
+
+/* "Klaar als" (D:36-42): 24px head, rows 34px r10, 15px square, remove on hover */
+.rz-task-wizard__criteria {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.rz-task-wizard__sechead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 24px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+.rz-task-wizard__box {
+  display: block;
+  width: 15px;
+  height: 15px;
+  border-radius: 5px;
+  border: 1.5px solid var(--muted);
+}
+.rz-task-wizard__box--dashed {
+  border: 1.5px dashed var(--line);
+}
+.rz-task-wizard__remove {
+  opacity: 0;
+}
+.rz-task-wizard__remove:hover {
+  background: none; /* D:39: only the colour changes */
+}
+.rz-task-wizard__criterion:hover .rz-task-wizard__remove,
+.rz-task-wizard__criterion:focus-within .rz-task-wizard__remove {
+  opacity: 1;
+}
+.rz-task-wizard__addrow {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  min-height: 34px;
+  padding: 4px 8px;
+}
+
+/* "Wacht op andere taken": not in the design; the shared `rz-disclosure` on the 24px line of the criteria rows */
+.rz-task-wizard__more > summary {
+  width: fit-content;
+  height: 24px;
+}
+.rz-task-wizard__count {
+  color: var(--text2);
+}
+.rz-task-wizard__deps {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 2px;
+  max-height: 214px; /* six rows, then the list scrolls */
+  overflow-y: auto;
+}
+.rz-task-wizard__depcheck {
+  width: 18px;
+  height: 18px;
+  justify-items: start;
+  border-radius: 5px;
+}
+
+/* ---- Step 2 · Uitvoering (D:47-69) ---- */
+.rz-task-wizard__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.rz-task-wizard__heading h2 {
+  font-size: var(--fs-title);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+.rz-task-wizard__heading p {
+  font-size: var(--fs-meta);
+  line-height: 1.3;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.rz-task-wizard__choices {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+/* Selected look (aria-pressed) and the radio glyph come from `.rz-choice` in primitives.css. */
+.rz-task-wizard__choice-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.rz-task-wizard__choice-name {
+  font-size: var(--fs-body);
+  font-weight: 500;
+  line-height: 1.3;
+}
+.rz-task-wizard__choice-desc {
+  font-size: var(--fs-meta);
+  line-height: 1.3;
+  color: var(--muted);
+}
+.rz-task-wizard__account {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  min-width: 0;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+.rz-task-wizard__account-chip {
+  max-width: 100%; /* the label carries "· standaard voor dit bedrijf" */
+}
+.rz-task-wizard__group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.rz-task-wizard__grouplabel {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+.rz-task-wizard__toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.rz-task-wizard__newchat {
+  height: 28px;
+  padding: 0 12px;
+  color: var(--text2);
+}
+
+/* Save / start error: a plain 12px --warn line directly above the footer (spec 5.3; no filled blocks in this modal) */
+.rz-task-wizard__error {
+  font-size: var(--fs-body);
+}
+
+/* ---- TaskSchedule.tsx outside the wizard ---- */
+.rz-task-wizard-schedule {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.rz-task-wizard-schedule__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+@media (max-width: 560px) {
+  .rz-task-wizard-schedule__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.rz-task-wizard-schedule__label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-meta);
+  color: var(--text2);
+}
+.rz-task-wizard-schedule__label > svg {
+  color: var(--muted);
+}
+/* The <details> is the shared `rz-disclosure`; the block only sets the line height and its own rows. */
+.rz-task-wizard-history {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+.rz-task-wizard-history > summary {
+  width: fit-content;
+  height: 24px;
+}
+.rz-task-wizard-history > .rz-hint,
+.rz-task-wizard-history > .rz-error {
+  padding: 6px 0;
+}
+.rz-task-wizard-history__row {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 12px;
+  align-items: baseline;
+  padding: 8px 0;
+}
+.rz-task-wizard-history__row strong {
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+.rz-task-wizard-history__row small {
+  display: block;
+}
+.rz-task-wizard-history__row p {
+  margin-top: 2px;
+  font-size: var(--fs-body);
+  color: var(--text);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

@@ -1,0 +1,125 @@
+/*
+ * Rustig area css: overlays
+ * Company picker, shortcut sheet, file modal host, toasts placement.
+ * Block prefix(es): rz-overlays, rz-shortcuts, rz-picker. EVERY selector in this file starts with one of them, so the import order in
+ * index.css never matters. Shared look comes from primitives.css (via src/ui/rz.tsx): never restyle an
+ * `rz-` primitive globally from here, never use a legacy class name, never write `!important`.
+ * This file has exactly one owner package; index.css already imports it.
+ *
+ * No prototype for these overlays: modal frame D/NieuweTaak:21-26 (the `Modal` primitive), rows and the dashed
+ * add row D/JeBedrijf:85-87, toast D/Werkplek:147 (the `Toast` primitive). Spec: tmp/rustig/notes/other-pages.md §1.9-1.12.
+ */
+
+/* ---- Company picker: rows bleed 12px, so badge and text line up with the modal title (22px) ---- */
+.rz-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0 -12px;
+  min-width: 0;
+}
+.rz-picker__row {
+  --rz-row-gap: 12px;
+}
+/* "Bedrijf toevoegen" is the shared `.rz-addrow` (primitives.css). */
+
+/* ---- File modal: the head row carries the file name (mono, muted), the viewer fills the rest.
+        FileViewer's own look belongs to the review package; this only gives it room. ---- */
+.rz-overlays__file > .rz-modal__head {
+  padding-bottom: 14px;
+}
+.rz-overlays__filename {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+
+/* ---- Toasts (sizing comes from `.rz-toast`). An error stays until it is closed; a notice passing by (4.5 s)
+        takes the bottom spot, the error steps up. ---- */
+.rz-overlays__toast:has(+ .rz-overlays__toast) {
+  bottom: calc(var(--rz-toast-bottom, 24px) + 44px);
+}
+.rz-overlays__toast-dot {
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+/* A notice starts with a 14px check in --accent (other-pages §1.11); base.css gives .lucide-check its stroke 3. */
+.rz-overlays__toast-check {
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle;
+  color: var(--accent);
+}
+
+/* ---- Shortcut sheet: a quiet, non-modal panel bottom right. Clears a docked composer the way toasts do. ---- */
+.rz-shortcuts {
+  position: fixed;
+  right: 24px;
+  bottom: var(--rz-toast-bottom, 24px);
+  z-index: 30;
+  width: min(520px, calc(100vw - 48px));
+  max-height: calc(100vh - 48px - var(--rz-toast-bottom, 24px));
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 22px 22px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: var(--r-modal);
+  box-shadow: var(--shadow-modal);
+  -webkit-app-region: no-drag;
+}
+.rz-shortcuts__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+}
+.rz-shortcuts__title {
+  margin: 0;
+  font-size: var(--fs-lead);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+.rz-shortcuts__grid {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 28px;
+}
+.rz-shortcuts__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 32px;
+  padding: 3px 0;
+  min-width: 0;
+}
+.rz-shortcuts__label {
+  min-width: 0;
+  font-size: var(--fs-body);
+  color: var(--text2);
+  text-wrap: pretty;
+}
+.rz-shortcuts__keys {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+  white-space: nowrap;
+}
+.rz-shortcuts__or {
+  font-size: var(--fs-col);
+  color: var(--muted);
+}
+@media (max-width: 620px) {
+  .rz-shortcuts__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

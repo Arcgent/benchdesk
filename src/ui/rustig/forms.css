@@ -1,0 +1,230 @@
+/*
+ * Rustig area css: forms
+ * Editor (all kinds), TaskSchedule fields/chips, TaskFields.
+ * Block prefix(es): rz-forms, rz-editor, rz-task-schedule, rz-task-fields. EVERY selector in this file starts with one of them, so the import order in
+ * index.css never matters. Shared look comes from primitives.css (via src/ui/rz.tsx): never restyle an
+ * `rz-` primitive globally from here, never use a legacy class name, never write `!important`.
+ * This file has exactly one owner package; index.css already imports it.
+ *
+ * The Editor has no prototype (README "Niet in scope"): everything below is step 1 of D/NieuweTaak (lines 28-43)
+ * applied to the existing fields. Field / Input / Textarea / Select / Chip / Button come from primitives.css.
+ */
+.rz-editor__body {
+  gap: 18px; /* other-pages §1.13: forms are denser than the wizard's 20px */
+}
+
+/* ---- Layout helpers ---- */
+.rz-forms__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  align-items: start;
+  min-width: 0;
+}
+.rz-forms__grid--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media (max-width: 560px) {
+  .rz-forms__grid,
+  .rz-forms__grid--three {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+/* An input with a pill ("Kiezen") or a trailing unit ("gesprekken / 12") on the same line */
+.rz-forms__action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.rz-forms__action > input {
+  flex: 1 1 0;
+}
+.rz-forms__suffix {
+  flex: none;
+  max-width: 50%;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rz-forms__chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* ---- "Klaar als" (D/NieuweTaak:36-41) and the list of linked documents ---- */
+.rz-forms__criteria,
+.rz-forms__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.rz-forms__criteria-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 24px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+.rz-forms__criterion,
+.rz-forms__source {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  min-height: 34px;
+  padding: 4px 8px;
+  border-radius: 10px;
+}
+.rz-forms__criterion:hover,
+.rz-forms__criterion:focus-within,
+.rz-forms__source:hover,
+.rz-forms__source:focus-within {
+  background: var(--row);
+}
+.rz-forms__source > svg {
+  color: var(--muted);
+  justify-self: center;
+}
+.rz-forms__source-name {
+  font-size: var(--fs-body);
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rz-forms__box {
+  width: 15px;
+  height: 15px;
+  border-radius: 5px;
+  border: 1.5px solid var(--muted);
+  display: grid;
+  place-items: center;
+  color: var(--on-accent);
+}
+.rz-forms__box svg {
+  width: 9px;
+  height: 9px;
+  opacity: 0;
+}
+.rz-forms__box[data-checked] {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.rz-forms__box[data-checked] svg {
+  opacity: 1;
+}
+/* README "✕ bij hover": also shown while the row has the keyboard focus */
+.rz-forms__remove {
+  opacity: 0;
+}
+.rz-forms__remove:hover {
+  background: none; /* D/NieuweTaak:39: only the colour changes */
+}
+.rz-forms__criterion:hover .rz-forms__remove,
+.rz-forms__criterion:focus-within .rz-forms__remove,
+.rz-forms__source:hover .rz-forms__remove,
+.rz-forms__source:focus-within .rz-forms__remove {
+  opacity: 1;
+}
+.rz-forms__add {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  min-height: 34px;
+  padding: 4px 8px;
+  border-radius: 10px;
+  font-size: var(--fs-body);
+  color: var(--muted);
+  text-align: left;
+}
+.rz-forms__add:hover {
+  color: var(--text);
+}
+.rz-forms__add-box {
+  width: 15px;
+  height: 15px;
+  border-radius: 5px;
+  border: 1.5px dashed var(--line); /* D/NieuweTaak:41, plus from D/JeBedrijf:87 */
+  display: grid;
+  place-items: center;
+}
+
+/* ---- "Wacht op": removable pills ---- */
+.rz-forms__deps {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.rz-forms__dep {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  max-width: 100%;
+  min-width: 0;
+  padding: 0 8px 0 10px;
+  border-radius: var(--r-pill);
+  background: var(--row);
+  font-size: var(--fs-meta);
+  color: var(--text2);
+}
+.rz-forms__dep:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+.rz-forms__dep > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- Checkbox with a visible label (the box itself is the base.css checkbox: 15px, radius 5) ---- */
+.rz-forms__checks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 21px; /* centres the pair on the 36px control of the field beside it */
+}
+.rz-forms__check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--fs-body);
+  color: var(--text2);
+  cursor: pointer;
+}
+.rz-forms__check:hover {
+  color: var(--text);
+}
+/* base.css removes the ring from every input; a checkbox has no caret, so it needs one */
+.rz-forms__check input:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--text) 40%, transparent);
+  outline-offset: 2px;
+}
+
+/* ---- "Prioriteit en overige opties": the <details> is the shared `rz-disclosure`; only its body is local ---- */
+.rz-forms__more-body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding-top: 14px;
+}
+
+/* ---- Destructive text action: quiet, --warn, never a filled pill ---- */
+.rz-forms__danger,
+.rz-forms__danger:hover {
+  color: var(--warn);
+}
+.rz-forms__danger:hover {
+  opacity: 0.8; /* disabled: `.rz-link:disabled` (primitives.css) keeps it at .35 */
+}

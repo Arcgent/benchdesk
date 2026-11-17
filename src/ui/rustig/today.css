@@ -1,0 +1,252 @@
+/*
+ * Rustig area css: today
+ * Vandaag: greeting + sentence headline, goal cards, Wacht op jou / Verdergaan / Gepland, suggestions.
+ * Block prefix(es): rz-today. EVERY selector in this file starts with one of them, so the import order in
+ * index.css never matters. Shared look comes from primitives.css (via src/ui/rz.tsx): never restyle an
+ * `rz-` primitive globally from here, never use a legacy class name, never write `!important`.
+ * This file has exactly one owner package; index.css already imports it.
+ *
+ * Blocks: `rz-today` (page, "Alle taken" sub-view) and `rz-today-sug` (Suggestions.tsx).
+ * Values: D/Vandaag = design_handoff_benchdesk_rustig/Vandaag Rustig.dc.html:<line>.
+ */
+
+/* ---- Head: greeting line + sentence headline (D/Vandaag:64-67). "Prioriteitenadvies" is not in the design:
+        it shares the headline row without moving the headline (25px line, 32px pill → 4px pulled in). ---- */
+.rz-today__head .rz-head {
+  flex-wrap: nowrap;
+  align-items: flex-start;
+}
+.rz-today__head .rz-head__text {
+  flex: 1 1 auto;
+}
+.rz-today__head .rz-head__actions {
+  flex: none;
+  margin-block: -4px;
+}
+
+/* ---- Goal + check-in cards (D/Vandaag:69-87). Cards are buttons: every child is a span. ---- */
+.rz-today__card {
+  width: 100%;
+}
+.rz-today__card-title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-size: var(--fs-body);
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--text);
+  text-wrap: pretty;
+}
+.rz-today__card-foot {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+.rz-today__note {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  font-size: var(--fs-body);
+  line-height: 1.45; /* D/Vandaag:84 */
+  color: var(--text2);
+  text-wrap: pretty;
+}
+.rz-today__card-action {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto; /* D/Vandaag:85 */
+  min-width: 0;
+}
+.rz-today__card-action > .rz-today__card-foot {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rz-today__cta {
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+/* ---- Rows ---- */
+/* The text column of a row that also holds a check: a real button, so the task opens from the keyboard.
+   The click itself is handled by the row. */
+.rz-today__open {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  border-radius: 8px;
+  text-align: left;
+}
+.rz-today__open > .rz-row__text {
+  flex: 1 1 auto;
+}
+/* A bordered pill on a hovered row: --row on --row would show nothing. */
+.rz-today__pill.rz-btn--secondary:hover {
+  background: var(--hover);
+}
+.rz-today__due {
+  font-size: var(--fs-body); /* D/Vandaag:119 */
+  color: var(--muted);
+  white-space: nowrap;
+}
+.rz-today__empty {
+  padding: 8px 12px;
+  font-size: var(--fs-body);
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* ---- "Alle taken": tab row with a search field without a box; list rows as on Project (D/Project:85-89) ---- */
+.rz-today__search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 1 240px;
+  min-width: 0;
+  height: 34px;
+  color: var(--muted);
+  cursor: text;
+}
+.rz-today__search:focus-within {
+  color: var(--text);
+  box-shadow: inset 0 -1px 0 var(--text2);
+}
+.rz-today__search input {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font-size: var(--fs-body);
+  color: var(--text);
+}
+.rz-today__status {
+  min-width: 92px; /* D/Project:88 */
+  justify-content: flex-end;
+}
+.rz-today__action {
+  display: flex;
+  justify-content: flex-end;
+  min-width: 86px; /* "Beoordelen" pill and "Openen" share one column */
+}
+
+/* ---- Suggestions: "Drie voorstellen voor je bedrijf", after "Gepland voor vandaag" ---- */
+.rz-today-sug {
+  gap: 10px;
+}
+.rz-today-sug__head {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.rz-today-sug__lead {
+  padding: 0 12px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  text-wrap: pretty;
+}
+/* Text actions can be disabled here (generating, deciding): opacity .45 (other-pages.md §1.7), quiet under the pointer too. */
+.rz-today-sug .rz-link:disabled,
+.rz-today-sug .rz-link:disabled:hover {
+  opacity: 0.45;
+  cursor: default;
+}
+.rz-today-sug .rz-link--meta:disabled:hover {
+  color: var(--muted);
+}
+.rz-today-sug__notice {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  font-size: var(--fs-body);
+  color: var(--text2);
+}
+.rz-today-sug__notice > span {
+  min-width: 0;
+  text-wrap: pretty;
+}
+.rz-today-sug__card--decided {
+  opacity: 0.55;
+}
+.rz-today-sug__title {
+  font-size: var(--fs-body);
+  font-weight: 500;
+  line-height: 1.35;
+  text-wrap: pretty;
+}
+.rz-today-sug__reason {
+  font-size: var(--fs-body);
+  line-height: 1.45;
+  color: var(--text2);
+  text-wrap: pretty;
+}
+.rz-today-sug__goal {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+.rz-today-sug__goal strong {
+  font-weight: 400;
+  color: var(--text2);
+}
+.rz-today-sug__details {
+  font-size: var(--fs-meta);
+  line-height: 1.6;
+  color: var(--text2);
+}
+.rz-today-sug__details summary {
+  color: var(--muted);
+  cursor: pointer;
+}
+.rz-today-sug__details summary:hover {
+  color: var(--text);
+}
+.rz-today-sug__details p,
+.rz-today-sug__details ul {
+  margin: 6px 0 0;
+  overflow-wrap: anywhere;
+}
+.rz-today-sug__details ul {
+  padding-left: 16px;
+}
+.rz-today-sug__foot {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: auto;
+  min-height: 20px;
+}
+.rz-today-sug__decision {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--fs-meta);
+  color: var(--text2);
+}
+.rz-today-sug__decision svg {
+  color: var(--accent);
+}
+.rz-today-sug__empty {
+  padding: 18px;
+  border: 1px dashed var(--line);
+  border-radius: var(--r-card);
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+.rz-today-sug__footnote {
+  padding: 0 12px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  text-wrap: pretty;
+}

@@ -1,0 +1,195 @@
+/*
+ * Rustig area css: company
+ * Je bedrijf: Doelen / Check-ins / Profiel.
+ * Block prefix(es): rz-company. EVERY selector in this file starts with one of them, so the import order in
+ * index.css never matters. Shared look comes from primitives.css (via src/ui/rz.tsx): never restyle an
+ * `rz-` primitive globally from here, never use a legacy class name, never write `!important`.
+ * This file has exactly one owner package; index.css already imports it.
+ *
+ * Frame, head, tabs, cards, bar, rows, pills and the 110px definition rows are primitives (PageShell, PageHead,
+ * Tabs, Cards/Card, Bar, Row, Button, `rz-deflist`). Only what the design adds on top lives here.
+ * Where a rule adjusts a primitive it names both classes (`.rz-company__x.rz-y`), so it wins by specificity.
+ */
+
+/* Tab body: the page column has gap 32, the design pulls every tab body up to 20 (D/JeBedrijf:69,94,106). */
+.rz-company__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: -12px;
+  min-width: 0;
+}
+.rz-company__panel--goals {
+  gap: 20px;
+}
+.rz-company__spark {
+  stroke-width: 2; /* D/JeBedrijf:64 */
+}
+
+/* ---- Doelen (D/JeBedrijf:70-89) ---- */
+.rz-company__goal {
+  justify-content: flex-start; /* cards in one grid row share a height: content stays at the top */
+}
+/* The prototype sets no line-height on the card (D/JeBedrijf:12,72-76): label 14, figure 21, meta 14 → a 118px
+   card next to the 120px tile. base.css's 1.5 would add 12px. Same font stack, so `normal` lands on the same pixels. */
+.rz-company__goal .rz-card__label,
+.rz-company__goal .rz-figure,
+.rz-company__goal-meta {
+  line-height: normal;
+}
+.rz-company__goal-due {
+  white-space: nowrap;
+  flex: none;
+}
+/* Not in the prototype (its sample units carry the meaning); real units are often generic, so the title stays. */
+.rz-company__goal-title {
+  font-size: var(--fs-body);
+  font-weight: 500;
+  line-height: 1.4;
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.rz-company__goal-meta {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+.rz-company__new svg {
+  stroke-width: 2.2; /* D/JeBedrijf:79 */
+}
+.rz-company__note {
+  padding: 0 12px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+/* "Draagt bij aan {doel}": one text run (a normal space, not the label's 8px gap) that gives way to the actions. */
+.rz-company__contrib {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* "Project koppelen" / "Documenten koppelen" are the shared `.rz-addrow` (primitives.css). */
+
+/* ---- Check-ins + Profiel: header line (D/JeBedrijf:95,107) ---- */
+.rz-company__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 12px;
+}
+.rz-company__hint {
+  min-width: 0;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+
+/* ---- Check-in row (D/JeBedrijf:97-100) ---- */
+.rz-company__checkin {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  padding: 12px;
+  border-radius: var(--r-row);
+}
+.rz-company__checkin:hover {
+  background: var(--row);
+}
+.rz-company__checkin-date {
+  padding-top: 2px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+.rz-company__checkin-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.rz-company__checkin-note {
+  max-width: 600px;
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  text-wrap: pretty;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.rz-company__checkin-meta {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.rz-company__empty.rz-empty {
+  padding: 12px;
+}
+
+/* ---- Profiel (D/JeBedrijf:109-115). Rows are `rz-deflist`. ---- */
+.rz-company__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  min-width: 0;
+}
+.rz-company__value {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.rz-company__value--edit.rz-deflist__v {
+  max-width: none; /* the textarea fills the column; only the read text is capped at 600px */
+}
+.rz-company__input.rz-textarea {
+  display: block;
+  line-height: 1.55; /* D/JeBedrijf:111 */
+  /* grows with the text, never below the designed height of rows="1" */
+  min-height: calc(1.55em + 18px);
+  field-sizing: content;
+}
+.rz-company__input--tall.rz-textarea {
+  min-height: calc(3.1em + 18px); /* rows="2" */
+}
+.rz-company__blank {
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  color: var(--muted);
+}
+.rz-company__blank:hover {
+  color: var(--text);
+}
+.rz-company__folder {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  min-width: 0;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+.rz-company__path {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--mono);
+  font-size: inherit;
+  color: var(--text2);
+}
+.rz-company__path:hover:not(:disabled) {
+  color: var(--text);
+}
+.rz-company__folder-action.rz-link {
+  flex: none;
+  font-size: inherit; /* 11.5px inside the Werkmap line */
+}
+.rz-company__docs {
+  margin-top: 8px;
+}
+.rz-company__doc-icon {
+  color: var(--muted);
+}

@@ -1,0 +1,26 @@
+/*
+ * Minimaal — an optional, calmer design style on top of Rustig. Chosen in Profiel → Stijl (Theme.tsx
+ * `setDesign`), stored per device, applied as `data-design="minimaal"` on <html>.
+ *
+ * Rules (design_handoff_benchdesk_rustig/README.md is still the measure):
+ *   - green only on actions, one green button per screen;
+ *   - no frames around lists or cards, no dividers between rows, a fill only on hover;
+ *   - type, radii and colours only through the tokens in tokens.css;
+ *   - no motion except short opacity/background fades.
+ *
+ * Scoping: EVERY selector starts with `html:root[data-design="minimaal"]` followed by the original selector.
+ * That prefix adds (0,2,1) specificity, so an override always beats the rule it replaces, also the ones in
+ * agents.css / brain.css / dashboard.css that load after this file. The default design is never affected.
+ */
+@import "./minimaal/dashboard.css";
+@import "./minimaal/workplace.css";
+@import "./minimaal/agents.css";
+@import "./minimaal/brain.css";
+@import "./minimaal/integrations.css";
+
+/* Dark theme: soft grey text instead of pure white, as in the Rustig spec. (--term-fg stays: xterm takes its
+   colours from shared/terminal-theme.ts, so changing it here would split the terminal and Activiteit views.) */
+html:root[data-design="minimaal"][data-theme="dark"] {
+  --text: #ececec;
+  --btn: #ececec;
+}

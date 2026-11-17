@@ -1,0 +1,212 @@
+/*
+ * Rustig area css: task-info
+ * Taakinfo column of a maximised conversation.
+ * Block prefix(es): rz-task-info. EVERY selector in this file starts with one of them, so the import order in
+ * index.css never matters. Shared look comes from primitives.css (via src/ui/rz.tsx): never restyle an
+ * `rz-` primitive globally from here, never use a legacy class name, never write `!important`.
+ * This file has exactly one owner package; index.css already imports it.
+ *
+ * Not drawn in the design (critic U2). Built from Beoordelen's left column: 28px section labels with a 12px inset,
+ * criteria rows (D/Beoordelen:72-74: 28px check cell, square 18 r6, r14, hover `--row`), "Opgeleverd" rows
+ * (D/Beoordelen:86) and the footer (D/Beoordelen:90: 1px `--line2`, primary pill first). 260px wide, 52px head
+ * so it lines up with the pane header beside it.
+ */
+.rz-task-info {
+  display: flex;
+  flex-direction: column;
+  flex: none;
+  width: 260px;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  border-left: 1px solid var(--line2);
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+}
+.rz-task-info__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+  height: 52px;
+  padding: 0 12px 0 22px;
+  min-width: 0;
+}
+.rz-task-info__project {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--text2);
+}
+.rz-task-info__body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 6px 10px 20px;
+}
+.rz-task-info__body > * {
+  flex: none;
+}
+
+/* Status line, title, schedule, assignment: plain text with the same 12px inset as the rows */
+.rz-task-info__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 0 12px;
+}
+.rz-task-info__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 5px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+.rz-task-info__meta [data-late] {
+  color: var(--warn);
+}
+.rz-task-info__title {
+  margin: 0;
+  font-size: var(--fs-lead);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+.rz-task-info__schedule {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.rz-task-info__text {
+  margin: 0;
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  color: var(--text2);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+.rz-task-info__text[data-empty] {
+  color: var(--muted);
+}
+
+/* A section label that keeps its heading role next to an icon action (a button inside the <h3> would become part
+   of the heading's name). The label grows, the action ends on the label's 12px inset. */
+.rz-task-info__label-row {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  padding-right: 12px;
+}
+.rz-task-info__label {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Criteria: the whole row toggles, the check is a real checkbox (D/Beoordelen:72: grid 28px, gap 12, padding 10/12) */
+.rz-task-info__criterion {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 10px 12px;
+  border-radius: var(--r-row);
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  cursor: pointer;
+}
+.rz-task-info__criterion:hover {
+  background: var(--row);
+}
+.rz-task-info__criterion > span {
+  min-width: 0;
+  padding-top: 4px;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+
+/* A loose line inside a section (text action, hint) */
+.rz-task-info__line {
+  margin: 0;
+  padding: 4px 12px;
+}
+.rz-task-info__hint {
+  font-size: var(--fs-meta);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* "Wacht op" and file rows */
+.rz-task-info__row {
+  padding-inline: 12px;
+}
+.rz-task-info__arrow {
+  color: var(--muted);
+}
+.rz-task-info__file {
+  --rz-row-h: 42px; /* D/Beoordelen:86 */
+}
+.rz-task-info__tile {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: var(--bubble);
+  color: var(--text2);
+  display: grid;
+  place-items: center;
+}
+.rz-task-info__when {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* "Laatste resultaat" / "Voortgang": the shared `rz-disclosure`, sized like a section label (28px, 12px inset) */
+.rz-task-info__more > summary {
+  display: flex;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 10px;
+}
+.rz-task-info__more p {
+  margin: 0;
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  color: var(--text2);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.rz-task-info__more > p,
+.rz-task-info__event {
+  padding: 4px 12px;
+}
+.rz-task-info__event {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Footer: primary pill first (D/Beoordelen:90-92) */
+.rz-task-info__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  padding: 14px 16px 18px 22px;
+  border-top: 1px solid var(--line2);
+}

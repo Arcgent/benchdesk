@@ -1,0 +1,222 @@
+/*
+ * Rustig element rules. Foundation-owned, frozen. Element / pseudo selectors only, no classes except `.lucide`.
+ *
+ * index.css imports this file into `@layer base` (see the header there): unlayered `rz-` rules always beat
+ * this file, whatever their specificity (`.rz-check__input` vs `input[type="checkbox"]`, `.rz-profile__range`
+ * vs `input[type="range"]`), so an area never has to out-specify an element rule.
+ *
+ * No `:root { font-size }`: nothing in the app uses rem, and the only em values are letter-spacings
+ * (grep-verified), so the root size only reaches text through inheritance and `body` sets that.
+ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+body {
+  font-family: var(--font);
+  font-size: var(--fs-body);
+  font-weight: 400;
+  line-height: 1.5;
+  font-synthesis: none;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+h1 {
+  font-size: var(--fs-h1);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  text-wrap: pretty;
+}
+h2 {
+  font-size: var(--fs-body);
+  font-weight: 600;
+}
+h3 {
+  font-size: var(--fs-body);
+  font-weight: 500;
+}
+small {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+a {
+  color: var(--text);
+}
+a:hover {
+  opacity: 0.8;
+}
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+button {
+  cursor: pointer;
+  border: 0;
+  padding: 0;
+  background: none;
+  text-align: inherit;
+  transition: none;
+}
+button:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+button:not(:disabled):hover,
+button:not(:disabled):active {
+  filter: none;
+}
+input,
+select,
+textarea {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 8px 12px;
+  min-width: 0;
+  width: 100%;
+  font-size: var(--fs-body);
+  outline: 0;
+  caret-color: var(--text);
+}
+select {
+  cursor: pointer;
+}
+textarea {
+  resize: vertical;
+  line-height: 1.55;
+}
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--text2);
+  box-shadow: none;
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted);
+}
+input[type="checkbox"] {
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+  padding: 0;
+  margin: 0;
+  border: 1.5px solid var(--muted);
+  border-radius: 5px;
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+}
+input[type="checkbox"]:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+/* Same pseudo-element as the legacy "✓" glyph (styles.css:124), so it replaces it instead of doubling it. */
+input[type="checkbox"]:checked::before {
+  content: "";
+  width: 8px;
+  height: 5px;
+  margin-top: -2px;
+  border-left: 2px solid var(--on-accent);
+  border-bottom: 2px solid var(--on-accent);
+  transform: rotate(-45deg);
+  font-size: 0;
+}
+input[type="date"],
+input[type="time"] {
+  font-family: inherit;
+  font-size: var(--fs-body);
+}
+input[type="range"] {
+  accent-color: var(--accent);
+}
+code,
+pre,
+kbd {
+  font-family: var(--mono);
+}
+/* Shortcuts only live in tooltips (README "Copy-regels"); `.rz-kbd` is the one visible <kbd>. */
+kbd {
+  display: none;
+}
+svg {
+  flex-shrink: 0;
+}
+/* Icons: lucide renders stroke-width="2"; a css property beats that presentation attribute.
+   README: line icons at 1.8. Documented exceptions: plus / chevron / close stay 2, check glyphs 3. */
+.lucide {
+  stroke-width: 1.8;
+}
+.lucide-plus,
+.lucide-x,
+.lucide[class*="lucide-chevron"] {
+  stroke-width: 2;
+}
+.lucide-check {
+  stroke-width: 3;
+}
+/* Focus: neutral ring for keyboard users only. Green is reserved for actions. */
+:focus {
+  outline: 0;
+}
+:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--text) 40%, transparent);
+  outline-offset: 2px;
+}
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 0;
+}
+::selection {
+  background: color-mix(in srgb, var(--text) 14%, transparent);
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--muted) 40%, transparent);
+  background-clip: content-box;
+  border: 3px solid transparent;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: color-mix(in srgb, var(--muted) 70%, transparent);
+}
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+/* The single allowed `!important` of the Rustig css. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

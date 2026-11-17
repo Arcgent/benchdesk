@@ -1,0 +1,107 @@
+{
+  "inspectedAt": "2026-09-15T10:16:47.908Z",
+  "timezone": "Europe/Amsterdam",
+  "jobs": [
+    {
+      "id": "113f5f72c358b78be11a",
+      "sourceId": "mac-crontab",
+      "title": "nightly_report_filtered.py",
+      "kind": "cron",
+      "status": "error",
+      "schedule": "Elke 15 minuten",
+      "timezone": "Europe/Amsterdam",
+      "nextRunAt": "2026-09-15T10:30:00.000Z",
+      "origin": "crontab -l:2",
+      "description": "Schema: */15 * * * *. Werkmap ontbreekt.",
+      "issue": "De ingestelde werkmap bestaat niet op deze Mac.",
+      "system": false
+    },
+    {
+      "id": "8aecf7aeda3811fe341a",
+      "sourceId": "mac-crontab",
+      "title": "nightly_report.py",
+      "kind": "cron",
+      "status": "error",
+      "schedule": "Elke 15 minuten",
+      "timezone": "Europe/Amsterdam",
+      "nextRunAt": "2026-09-15T10:30:00.000Z",
+      "origin": "crontab -l:1",
+      "description": "Schema: */15 * * * *. Werkmap ontbreekt.",
+      "issue": "De ingestelde werkmap bestaat niet op deze Mac.",
+      "system": false
+    },
+    {
+      "id": "38be03fb28b7e644b3e5",
+      "sourceId": "befe280b3a6d19cabff1",
+      "title": "Voorbeeldcampagne 2",
+      "kind": "scheduled",
+      "status": "paused",
+      "schedule": "ma, di, wo, do, vr · 08:00–11:30",
+      "timezone": "America/Chicago",
+      "origin": "mcp.instantly.ai",
+      "description": "Terugkerend verzendvenster in Instantly. Een open venster bevestigt niet dat er op dat moment e-mails worden verzonden."
+    },
+    {
+      "id": "189907c424fd2a53a932",
+      "sourceId": "befe280b3a6d19cabff1",
+      "title": "Voorbeeldcampagne 3",
+      "kind": "scheduled",
+      "status": "completed",
+      "schedule": "ma, di, wo, do, vr · 08:00–11:30",
+      "timezone": "America/Chicago",
+      "origin": "mcp.instantly.ai",
+      "description": "Terugkerend verzendvenster in Instantly. Een open venster bevestigt niet dat er op dat moment e-mails worden verzonden."
+    },
+    {
+      "id": "4d5125156dc71bbb171f",
+      "sourceId": "befe280b3a6d19cabff1",
+      "title": "Voorbeeldcampagne 4",
+      "kind": "scheduled",
+      "status": "paused",
+      "schedule": "ma, di, wo, do, vr · 08:00–11:30",
+      "timezone": "America/Chicago",
+      "origin": "mcp.instantly.ai",
+      "description": "Terugkerend verzendvenster in Instantly. Een open venster bevestigt niet dat er op dat moment e-mails worden verzonden."
+    },
+    {
+      "id": "37559c590b3fa514b297",
+      "sourceId": "4d69071ef9a39c9e5921",
+      "title": "macOS · voorbeeldtaak",
+      "kind": "scheduled",
+      "status": "enabled",
+      "schedule": "* 12 * * *",
+      "timezone": "Europe/Amsterdam",
+      "nextRunAt": "2026-09-15T10:17:00.000Z",
+      "origin": "/System/Library/LaunchAgents/voorbeeld.plist",
+      "description": "Geplande systeemcontrole.",
+      "system": true,
+      "lastResult": "Laatst gemelde afsluitcode: 0"
+    }
+  ],
+  "sources": [
+    {
+      "id": "mac-crontab",
+      "name": "Crontab",
+      "location": "Voorbeeldbron",
+      "status": "ok",
+      "message": "",
+      "count": 2
+    },
+    {
+      "id": "befe280b3a6d19cabff1",
+      "name": "instantly",
+      "location": "Voorbeeldbron",
+      "status": "ok",
+      "message": "Actueel uit de dienst opgehaald.",
+      "count": 3
+    },
+    {
+      "id": "4d69071ef9a39c9e5921",
+      "name": "macOS · geplande taken",
+      "location": "Voorbeeldbron",
+      "status": "ok",
+      "message": "",
+      "count": 1
+    }
+  ]
+}

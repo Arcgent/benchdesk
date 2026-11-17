@@ -1,0 +1,219 @@
+/*
+ * Rustig area css: accounts
+ * Accounts & gebruik table + AccountModal.
+ * Block prefix(es): rz-accounts, rz-account-modal. EVERY selector in this file starts with one of them, so the import order in
+ * index.css never matters. Shared look comes from primitives.css (via src/ui/rz.tsx): never restyle an
+ * `rz-` primitive globally from here, never use a legacy class name, never write `!important`.
+ * This file has exactly one owner package; index.css already imports it.
+ *
+ * Values: design_handoff_benchdesk_rustig/Accounts Rustig.dc.html (D:<line>). The page frame, head, group label,
+ * column heads, rows, status, avatar, pills, chip and menus are the shared primitives; this file only adds the table.
+ */
+
+/* ---- Group: label row 32px, then the table, 4px apart (D:67-68). It is the container the narrow layout asks. ---- */
+.rz-accounts__group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  container: rz-accounts / inline-size;
+}
+/* ---- Table (D:69,71). ONE grid per group, head and rows are subgrids: with two `auto` tracks separate grids
+        (as in the prototype) would not line up once the statuses or chips differ in width. ---- */
+.rz-accounts__table {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) auto minmax(120px, 1fr) auto;
+  column-gap: 16px;
+  row-gap: 4px;
+  min-width: 0;
+}
+.rz-accounts__table .rz-accounts__cols {
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+}
+.rz-accounts__cols-end {
+  text-align: right;
+}
+/* Row: the `Row` primitive (lg = min 60px, padding 10px 12px, r14, hover --row) with cols="subgrid" */
+.rz-accounts__table .rz-accounts__row {
+  grid-column: 1 / -1;
+  --rz-row-gap: 16px;
+}
+.rz-accounts__table .rz-accounts__identity {
+  gap: 2px; /* D:72 */
+}
+.rz-accounts__status {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+/* second line under "Ingelogd": why logging out / removing is refused. Indented to the status text (dot 6 + gap 6). */
+.rz-accounts__active {
+  padding-left: 12px;
+  font-size: var(--fs-col);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.rz-accounts__usage {
+  min-width: 0;
+}
+.rz-accounts__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  min-width: 0;
+}
+/* D:82: the chip turns white on top of the hovered row */
+.rz-accounts__actions .rz-accounts__chip:hover {
+  background: var(--bg);
+}
+
+/* ---- Assistant without accounts (not in the design): one quiet row instead of the table ---- */
+.rz-accounts__empty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: var(--r-row);
+  font-size: var(--fs-body);
+  color: var(--muted);
+  text-align: left;
+}
+.rz-accounts__empty:hover {
+  background: var(--row);
+  color: var(--text);
+}
+
+/* ---- Footnote (D:89) ---- */
+.rz-accounts__foot {
+  margin: 0;
+  padding: 0 12px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* ---- Narrow content column (README "Responsief"; no breakpoint in the design): two lines per account ---- */
+@container rz-accounts (max-width: 640px) {
+  .rz-accounts__table {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .rz-accounts__table .rz-accounts__cols {
+    display: none;
+  }
+  .rz-accounts__table .rz-accounts__row {
+    row-gap: 8px;
+  }
+  .rz-accounts__table .rz-accounts__identity {
+    grid-area: 1 / 1;
+  }
+  .rz-accounts__table .rz-accounts__actions {
+    grid-area: 1 / 2;
+  }
+  .rz-accounts__table .rz-accounts__status {
+    grid-area: 2 / 1 / auto / -1;
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+  }
+  .rz-accounts__table .rz-accounts__usage {
+    grid-area: 3 / 1 / auto / -1;
+  }
+}
+
+/* ==== AccountModal (Modal width 520, scroll="body"; fields, chips and pills are primitives) ==== */
+
+/* Assistant choice: the executor rows of the task wizard (D/NieuweTaak:51-54), two side by side. They stay
+   aria-pressed BUTTONS (the smoke presses button "Codex"); the selected look and the radio glyph come from
+   `.rz-choice` in primitives.css. */
+.rz-account-modal__choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+  gap: 6px;
+}
+.rz-account-modal__choice-name {
+  font-size: var(--fs-body);
+  font-weight: 500;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* An existing account cannot change assistant: the chosen one stays readable, the other one fades.
+   The :hover variant outranks `.rz-choice:hover` (0,2,0) whatever the import order. */
+.rz-account-modal__choice:disabled,
+.rz-account-modal__choice:disabled:hover {
+  opacity: 0.45;
+  background: none;
+}
+.rz-account-modal__choice:disabled[aria-pressed="true"] {
+  opacity: 1;
+}
+.rz-account-modal__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+.rz-account-modal__chips .rz-chip {
+  max-width: 100%;
+}
+.rz-account-modal__advanced {
+  min-width: 0;
+}
+.rz-account-modal__advanced > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-meta);
+  color: var(--text2);
+  cursor: pointer;
+  list-style: none;
+  border-radius: 6px;
+}
+.rz-account-modal__advanced > summary::-webkit-details-marker {
+  display: none;
+}
+.rz-account-modal__advanced > summary:hover {
+  color: var(--text);
+}
+.rz-account-modal__advanced > summary svg {
+  color: var(--muted);
+}
+.rz-account-modal__advanced[open] > summary svg {
+  transform: rotate(90deg);
+}
+.rz-account-modal__advanced[open] > summary {
+  margin-bottom: 12px;
+}
+.rz-account-modal__folder {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.rz-account-modal__folder .rz-input {
+  flex: 1 1 0;
+  font-size: var(--fs-meta);
+}
+/* Embedded login: the live terminal, always in view (the body scrolls around it only in a very low window).
+   A grid cell stretches whatever root the Terminal component renders. */
+.rz-account-modal__terminal {
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  height: clamp(200px, calc(100vh - 330px), 320px);
+  flex: none;
+  border: 1px solid var(--term-line);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--term-bg);
+}
+/* The Terminal root brings its own 1px --term-line above and below (workplace.css); inside this box the
+   box's border is the rule. `:first-child` lifts the specificity above the root's class, so import order is moot. */
+.rz-account-modal__terminal > :first-child {
+  border-top: 0;
+  border-bottom: 0;
+}

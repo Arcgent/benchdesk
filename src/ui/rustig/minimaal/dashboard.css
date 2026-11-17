@@ -1,0 +1,246 @@
+/* Minimaal — dashboard. Every selector: html:root[data-design="minimaal"] <original selector>. See ../minimaal.css. */
+
+/* ---- Filters: a quiet search (fill only on hover) and the three filters as text chips (Dashboard.tsx
+        `filterControl`, Chip `quiet` + native <select> over it). ---- */
+html:root[data-design="minimaal"] .rz-dashboard__toolbar {
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+}
+html:root[data-design="minimaal"] .rz-dashboard__search {
+  flex: 0 1 240px;
+  gap: 8px;
+  min-height: 32px;
+  height: 32px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--muted);
+  font-size: var(--fs-body);
+  cursor: text;
+  transition: background-color 0.15s;
+}
+html:root[data-design="minimaal"] .rz-dashboard__search:hover {
+  background: var(--row);
+}
+/* Focus: the neutral input focus of base.css (a --text2 edge), never green. */
+html:root[data-design="minimaal"] .rz-dashboard__search:focus-within {
+  outline: 0;
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--text2);
+}
+html:root[data-design="minimaal"] .rz-dashboard__search svg {
+  width: 14px;
+  height: 14px;
+}
+html:root[data-design="minimaal"] .rz-dashboard__search input {
+  height: 100%;
+  padding: 0;
+  font-size: var(--fs-body);
+}
+html:root[data-design="minimaal"] .rz-dashboard__filter {
+  max-width: 220px;
+}
+html:root[data-design="minimaal"] .rz-dashboard__filter[data-active] {
+  color: var(--text);
+  font-weight: 500;
+}
+/* The native <select> lies invisibly over its chip: drop the bordered-select box of dashboard.css. */
+html:root[data-design="minimaal"] .rz-dashboard__toolbar select {
+  min-width: 0;
+  max-width: none;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+}
+html:root[data-design="minimaal"] .rz-dashboard__summary {
+  padding: 0 12px;
+}
+
+/* ---- Board: flat columns, a column head that reads as a section label ---- */
+html:root[data-design="minimaal"] .rz-dashboard__board {
+  gap: 16px;
+}
+html:root[data-design="minimaal"] .rz-dashboard__column {
+  border: 0;
+  border-radius: var(--r-card);
+  background: transparent;
+  transition: background-color 0.15s;
+}
+/* Drop target while dragging: a light fill instead of a green border. */
+html:root[data-design="minimaal"] .rz-dashboard__column[data-over] {
+  background: var(--row);
+}
+html:root[data-design="minimaal"] .rz-dashboard__column-head {
+  gap: 6px;
+  height: 28px;
+  padding: 0 12px;
+  margin-bottom: 4px;
+}
+html:root[data-design="minimaal"] .rz-dashboard__column-head h2 {
+  font-size: var(--fs-meta);
+  font-weight: 500;
+  color: var(--text2);
+}
+html:root[data-design="minimaal"] .rz-dashboard__column-head > span:last-child {
+  margin-left: 0;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+html:root[data-design="minimaal"] .rz-dashboard__cards {
+  gap: 2px;
+  padding: 0 0 12px;
+}
+
+/* ---- Card: a calm row without border; --row only on hover ---- */
+html:root[data-design="minimaal"] .rz-dashboard__task {
+  position: relative;
+  border: 0;
+  border-radius: var(--r-row);
+  background: transparent;
+  transition: background-color 0.15s;
+}
+html:root[data-design="minimaal"] .rz-dashboard__task:hover {
+  background: var(--row);
+}
+html:root[data-design="minimaal"] .rz-dashboard__task-open {
+  gap: 3px;
+  padding: 9px 12px 10px;
+  border-radius: inherit;
+}
+html:root[data-design="minimaal"] .rz-dashboard__title {
+  padding-right: 20px; /* room for the status control that shows on hover */
+  font-size: var(--fs-body);
+  font-weight: 500;
+  line-height: 1.45;
+}
+html:root[data-design="minimaal"] .rz-dashboard__meta {
+  color: var(--muted);
+  font-size: var(--fs-meta);
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+html:root[data-design="minimaal"] .rz-dashboard__due[data-late] {
+  color: var(--warn);
+}
+/* Waiting on other tasks: status as a 6px dot + --text2 text. */
+html:root[data-design="minimaal"] .rz-dashboard__warning {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+  color: var(--text2);
+  font-size: var(--fs-meta);
+}
+html:root[data-design="minimaal"] .rz-dashboard__warning::before {
+  content: "";
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--warn);
+}
+
+/* ---- Status control: the column already says the status, so the footer is a ⋯ in the top-right corner that
+        fades in on hover / keyboard focus. No divider, no layout shift. ---- */
+html:root[data-design="minimaal"] .rz-dashboard__task-foot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+html:root[data-design="minimaal"] .rz-dashboard__task:hover .rz-dashboard__task-foot,
+html:root[data-design="minimaal"] .rz-dashboard__task:focus-within .rz-dashboard__task-foot {
+  opacity: 1;
+}
+@media (hover: none) {
+  html:root[data-design="minimaal"] .rz-dashboard__task-foot {
+    opacity: 1;
+  }
+}
+html:root[data-design="minimaal"] .rz-dashboard__status {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--r-icon);
+  color: var(--muted);
+  cursor: pointer;
+}
+html:root[data-design="minimaal"] .rz-dashboard__status:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+html:root[data-design="minimaal"] .rz-dashboard__status[data-disabled] {
+  opacity: 0.35;
+  cursor: default;
+}
+html:root[data-design="minimaal"] .rz-dashboard__status[data-disabled]:hover {
+  background: transparent;
+  color: var(--muted);
+}
+html:root[data-design="minimaal"] .rz-dashboard__task-foot .rz-dashboard__status select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  opacity: 0;
+  appearance: none;
+  cursor: pointer;
+}
+html:root[data-design="minimaal"] .rz-dashboard__task-foot .rz-dashboard__status select:disabled {
+  cursor: default;
+}
+
+/* ---- Empty states: plain muted text, no frame ---- */
+html:root[data-design="minimaal"] .rz-dashboard__column-empty {
+  margin: 0;
+  padding: 6px 12px;
+  text-align: left;
+  font-size: var(--fs-meta);
+}
+html:root[data-design="minimaal"] .rz-dashboard__empty {
+  border: 0;
+  padding: 0 12px;
+  text-align: left;
+  font-size: var(--fs-body);
+}
+
+/* ---- Focus: the neutral ring of base.css instead of green ---- */
+html:root[data-design="minimaal"] .rz-dashboard :is(button, select):focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--text) 40%, transparent);
+}
+/* The status <select> is invisible: its ⋯ carries the ring. */
+html:root[data-design="minimaal"] .rz-dashboard .rz-dashboard__status select:focus-visible {
+  outline: 0;
+}
+html:root[data-design="minimaal"] .rz-dashboard__status:has(select:focus-visible) {
+  outline: 2px solid color-mix(in srgb, var(--text) 40%, transparent);
+  outline-offset: 0;
+}
+
+@media (max-width: 700px) {
+  html:root[data-design="minimaal"] .rz-dashboard__search {
+    flex-basis: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html:root[data-design="minimaal"] .rz-dashboard__search,
+  html:root[data-design="minimaal"] .rz-dashboard__column,
+  html:root[data-design="minimaal"] .rz-dashboard__task,
+  html:root[data-design="minimaal"] .rz-dashboard__task-foot {
+    transition: none;
+  }
+}

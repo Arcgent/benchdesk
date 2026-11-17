@@ -1,0 +1,627 @@
+/*
+ * Rustig area css: workplace
+ * Aan het werk canvas: split tree, panes, live terminal frame, Activiteit view, conversation list.
+ * Block prefix(es): rz-workplace, rz-canvas, rz-pane, rz-convlist. EVERY selector in this file starts with one of them, so the import order in
+ * index.css never matters. Shared look comes from primitives.css (via src/ui/rz.tsx): never restyle an
+ * `rz-` primitive globally from here, never use a legacy class name, never write `!important`.
+ * This file has exactly one owner package; index.css already imports it.
+ *
+ * Values: design_handoff_benchdesk_rustig "Werkplek Rustig.dc.html" (D/Werkplek:line). Where a primitive class
+ * sits on the same element as one of ours, our rule is written with two classes so it wins whatever the order.
+ */
+
+/* ---- Page: 56px top bar (shell's rz-topbar) | canvas (D/Werkplek:78). Container for the tool labels. ---- */
+.rz-workplace {
+  display: grid;
+  grid-template-rows: 56px minmax(0, 1fr);
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  background: var(--bg);
+  container: rz-workplace / inline-size;
+}
+/* Right group of the bar (D/Werkplek:88-91): gap 2, tools only change colour on hover */
+.rz-workplace__tools {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+  flex: none;
+}
+.rz-workplace__tools .rz-iconbtn:hover {
+  background: none;
+}
+.rz-workplace__tools .rz-iconbtn[aria-pressed="true"] {
+  color: var(--text);
+}
+.rz-workplace__tools .rz-workplace__new {
+  color: var(--accent); /* the pen of "Nieuw gesprek" D/Werkplek:50 */
+}
+/* README: "label verdwijnt < 1000px beschikbare breedte" (D/Werkplek:263 labelDisplay) */
+@container rz-workplace (max-width: 999.98px) {
+  .rz-workplace__tool-label {
+    display: none;
+  }
+}
+.rz-workplace__body {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+}
+.rz-workplace__body[data-info] {
+  grid-template-columns: minmax(0, 1fr) 260px; /* maximised = "Gesprek": the task column (D8) */
+}
+
+/* ---- Canvas (D/Werkplek:95-97) ---- */
+.rz-canvas {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--side);
+}
+/* D/Werkplek:150-151: 32px on the wrapper, the 420px of the primitive on the text column itself */
+.rz-canvas__empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  padding: 32px;
+  overflow: auto;
+}
+.rz-canvas__empty .rz-empty {
+  padding: 0;
+}
+.rz-canvas__empty-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+/* Divider (D/Werkplek:139-143): 8px hit area, 1px line over its whole length */
+.rz-canvas__divider {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+}
+.rz-canvas__divider:hover,
+.rz-canvas__divider:focus-visible {
+  background: var(--line2);
+}
+.rz-canvas__divider--row {
+  cursor: col-resize;
+}
+.rz-canvas__divider--col {
+  cursor: row-resize;
+}
+.rz-canvas__divider > i {
+  display: block;
+  background: var(--line);
+  border-radius: 999px;
+  transition:
+    background 0.15s ease,
+    width 0.15s ease,
+    height 0.15s ease;
+}
+.rz-canvas__divider--row > i {
+  width: 1px;
+  height: 100%;
+}
+.rz-canvas__divider--col > i {
+  width: 100%;
+  height: 1px;
+}
+.rz-canvas__divider--row:hover > i,
+.rz-canvas__divider--row:focus-visible > i {
+  width: 3px;
+  background: color-mix(in srgb, var(--accent) 55%, var(--line));
+}
+.rz-canvas__divider--col:hover > i,
+.rz-canvas__divider--col:focus-visible > i {
+  height: 3px;
+  background: color-mix(in srgb, var(--accent) 55%, var(--line));
+}
+.rz-workplace[data-dragging] {
+  user-select: none;
+}
+.rz-workplace[data-dragging] .rz-pane {
+  pointer-events: none; /* the live view must not swallow the drag */
+}
+
+/* ---- Pane: the active terminal gets a quiet green frame without resizing its content. ---- */
+.rz-pane {
+  position: absolute;
+  box-sizing: border-box;
+  transition:
+    opacity 0.15s,
+    filter 0.15s;
+  container: rz-pane / inline-size;
+}
+.rz-pane::before,
+.rz-pane[data-focused]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+.rz-pane::before {
+  border: 1px solid color-mix(in srgb, var(--text) 15%, var(--line));
+  border-radius: 9px;
+}
+.rz-pane[data-focused]::after {
+  border: 2px solid #77c994;
+  border-radius: 9px;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, #77c994 20%, transparent),
+    0 0 18px color-mix(in srgb, #77c994 15%, transparent);
+}
+.rz-pane__inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  background: var(--bg);
+  overflow: hidden;
+  border-radius: 9px;
+}
+/* Header 52px (D/Werkplek:101-110) */
+.rz-pane__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 52px;
+  flex: none;
+  padding: 0 12px 0 22px;
+  min-width: 0;
+  background: var(--row);
+  border-bottom: 1px solid var(--line);
+  transition: background 0.15s ease;
+}
+.rz-pane[data-focused] .rz-pane__head {
+  background: color-mix(in srgb, #77c994 10%, var(--row));
+}
+.rz-pane[data-maximised]::before,
+.rz-pane[data-maximised]::after {
+  display: none;
+}
+.rz-pane[data-maximised] .rz-pane__inner {
+  border-radius: 0;
+}
+/* The design (D/Werkplek:103) has `flex: none; max-width: 50%`. Ours shrinks, on purpose: the meta (basis 0) can never
+   take space from the title either way, only the fixed parts can (badge, status, 5-6 buttons against the design's 3),
+   and with `flex: none` those would be clipped in a 380-560px pane (the smoke's 420px panes) instead of the title. */
+.rz-pane__title {
+  flex: 0 1 auto;
+  min-width: 32px;
+  max-width: 50%;
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--text2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rz-pane__title-button {
+  appearance: none;
+  border: 0;
+  border-radius: 5px;
+  margin: -3px -5px;
+  padding: 3px 5px;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: text;
+}
+.rz-pane__title-button:hover {
+  background: var(--hover);
+}
+.rz-pane__title-input {
+  width: min(320px, 50%);
+  min-width: 80px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 4px 6px;
+  background: var(--bg);
+  font: inherit;
+  outline: none;
+}
+.rz-pane__title-input:focus {
+  border-color: var(--text2);
+}
+.rz-pane[data-focused] .rz-pane__title {
+  color: var(--text);
+}
+.rz-pane__meta {
+  flex: 1 1 0;
+  min-width: 0;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* The primitive `StatusDot size={12}` (12px, --text2, gap 6 = D/Werkplek:105); only its place in the row is ours */
+.rz-pane__status {
+  position: relative; /* for the sr-only word at ≤ 440px */
+  flex: none;
+}
+.rz-pane__actions {
+  display: flex;
+  gap: 1px;
+  flex: none;
+  margin-left: 6px;
+}
+/* More buttons than the design's three: a narrow pane drops the quiet parts first, then takes a second row. */
+@container rz-pane (max-width: 440px) {
+  .rz-pane__meta {
+    visibility: hidden; /* keeps pushing the status and the buttons to the right */
+  }
+  .rz-pane__status-text {
+    /* the dot stays; the word is still read out */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+}
+@container rz-pane (max-width: 380px) {
+  .rz-pane__head {
+    flex-wrap: wrap;
+    height: auto;
+    row-gap: 0;
+    padding: 8px 8px 4px 14px;
+  }
+  .rz-pane__title {
+    max-width: none;
+    flex: 1 1 0;
+  }
+  .rz-pane__meta {
+    display: none;
+  }
+  .rz-pane__actions {
+    width: 100%;
+    justify-content: flex-end;
+    margin-left: 0;
+  }
+}
+/* "Aan taak koppelen" from the ⋯ menu */
+.rz-pane__link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+  padding: 0 12px 10px 22px;
+  min-width: 0;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.rz-pane__link .rz-select {
+  flex: 1;
+  min-width: 0;
+  max-width: 360px;
+}
+.rz-pane__warning {
+  flex: none;
+  padding: 8px 22px;
+  font-size: var(--fs-meta);
+  line-height: 1.5;
+  color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 9%, transparent);
+  overflow-wrap: anywhere;
+}
+/* The conversation and, beside it, the files panel (owned by the panels package). The body is the unnamed
+   inline-size container that panel measures itself against; position: relative is for its overlay mode. */
+.rz-pane__body {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  container-type: inline-size;
+}
+.rz-pane__stream {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+.rz-pane__live {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+.rz-pane__live[hidden] {
+  display: none; /* stays mounted: the conversation keeps its screen while Activiteit shows */
+}
+
+/* ---- Activiteit = the design transcript (D/Werkplek:112-127) on the frozen .rz-term surface ---- */
+.rz-pane .rz-pane__log {
+  flex: 1;
+  overflow: auto;
+}
+.rz-pane__lines {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.rz-pane__line {
+  display: grid;
+  grid-template-columns: 44px 18px minmax(0, 1fr);
+  gap: 0 8px;
+  align-items: start;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+.rz-pane__time {
+  color: var(--muted); /* = --term-muted inside .rz-term */
+  font-variant-numeric: tabular-nums;
+}
+.rz-pane__mark {
+  font-weight: 600;
+  color: var(--muted);
+}
+.rz-pane__said {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.rz-pane__text {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+.rz-pane__line[data-kind="note"] .rz-pane__text {
+  color: var(--muted);
+}
+.rz-pane__line[data-kind="question"] {
+  background: color-mix(in srgb, var(--warn) 9%, transparent);
+}
+.rz-pane__line[data-kind="question"] .rz-pane__mark,
+.rz-pane__line[data-kind="question"] .rz-pane__text {
+  color: var(--warn);
+}
+.rz-pane__line[data-kind="result"] .rz-pane__mark,
+.rz-pane__line[data-kind="live"] .rz-pane__mark {
+  color: var(--accent);
+}
+.rz-pane__line[data-kind="live"] {
+  color: var(--muted);
+}
+.rz-pane__file {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  max-width: 100%;
+  color: var(--text2);
+}
+.rz-pane__file:hover {
+  color: var(--text);
+}
+.rz-pane__file > svg {
+  flex: none;
+}
+.rz-pane__file-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.rz-pane__file-meta {
+  flex: none;
+  color: var(--muted);
+}
+.rz-pane__cursor {
+  display: inline-block;
+  width: 7px;
+  height: 13px;
+  margin-left: 2px;
+  border-radius: 1px;
+  vertical-align: -2px;
+  background: var(--muted);
+}
+.rz-pane__cursor[data-busy] {
+  background: var(--accent); /* README: groen alleen bij Bezig */
+}
+.rz-pane__log-empty {
+  padding: 2px 8px;
+  color: var(--muted);
+}
+.rz-pane__note {
+  margin-top: 20px;
+  padding: 14px 8px 0;
+  border-top: 1px solid var(--term-line);
+}
+.rz-pane__note > p {
+  margin-top: 6px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+/* Composer, only under Activiteit (D/Werkplek:129-134). No "+": a running conversation has nothing to attach to. */
+.rz-pane .rz-pane__dock {
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.rz-pane .rz-pane__composer {
+  padding-left: 16px;
+}
+.rz-pane__queued {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+/* Stopped assistant / ended conversation: one quiet line with the way on */
+.rz-pane__ended {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex: none;
+  flex-wrap: wrap;
+  padding: 10px 22px 12px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+
+/* ---- Live view: frame around the real xterm (D/Werkplek:112, decision D6/C16). Also used by the login modal.
+        Colour and lines only: font, size and line height are the user's terminal preferences. ---- */
+.rz-workplace-term {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  padding: 14px 22px 16px;
+  background: var(--term-bg);
+  color: var(--term-fg);
+  border-top: 1px solid var(--term-line);
+  border-bottom: 1px solid var(--term-line);
+  overflow: hidden;
+}
+/* The presets keep their own spacing (C16; legacy pro.css:2700-2707); their screen colour is painted by Terminal.tsx. */
+.rz-workplace-term[data-file-drop="true"] {
+  outline: 2px solid var(--accent);
+  outline-offset: -3px;
+}
+.rz-workplace-term[data-preset="refined"] {
+  padding: 20px 22px 10px;
+}
+.rz-workplace-term[data-preset="compact"] {
+  padding: 12px 14px 6px;
+}
+/* Unpadded on purpose: the fit addon sizes xterm by the box of its parent. */
+.rz-workplace-term__screen {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.rz-workplace-term__screen > .xterm {
+  height: 100%;
+}
+@container rz-pane (max-width: 380px) {
+  .rz-workplace-term:not([data-preset="compact"]) {
+    padding: 12px 14px; /* compact is tighter already */
+  }
+}
+
+/* ---- Open conversations in the sidebar (D/Werkplek:54-64), under the label "Gesprekken" ---- */
+.rz-convlist {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0;
+  min-width: 0;
+  line-height: normal; /* as the sidebar rows of the shell */
+}
+.rz-convlist__group {
+  display: flex;
+  flex-direction: column;
+  margin-top: 22px;
+  min-width: 0;
+}
+.rz-convlist__group:first-child {
+  margin-top: 2px; /* right under the label "Gesprekken" */
+}
+.rz-convlist__label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 28px;
+  padding: 0 10px;
+  font-size: var(--fs-meta);
+  font-weight: 400;
+  color: var(--muted);
+  min-width: 0;
+}
+.rz-convlist__count {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+/* Row = the design's conversation button (D/Werkplek:58-60, the check at the row's 10px padding) with the hover action
+   laid OVER the check, so both scopes render the check in the same place. The quiet state has no fill (README:98);
+   hover and KEYBOARD focus add one (a mouse click leaves nothing behind: :focus-visible). */
+.rz-convlist__row {
+  position: relative;
+  min-width: 0;
+  border-radius: 10px;
+}
+.rz-convlist__row:hover,
+.rz-convlist__row:has(:focus-visible) {
+  background: var(--hover);
+}
+.rz-convlist__item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 10px;
+  font-size: var(--fs-body);
+  color: var(--text2);
+  text-align: left;
+}
+.rz-convlist__item[aria-pressed="true"] {
+  color: var(--text);
+}
+.rz-convlist__name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.rz-convlist__check {
+  color: var(--muted);
+  stroke-width: 2; /* design D/Werkplek:60; base.css draws every lucide check at 3 */
+  opacity: 0;
+}
+.rz-convlist__item[aria-pressed="true"] .rz-convlist__check {
+  opacity: 1;
+}
+/* Stop (open) / Hervatten (history): over the check, shown on hover or keyboard focus; the check makes way for it.
+   Opacity on purpose: the button keeps its tab stop (visibility:hidden would drop it from the tab order) and a test
+   can click it. It carries the row's hover fill so a long title ends under it cleanly. */
+.rz-convlist__action {
+  position: absolute;
+  top: 50%;
+  right: 6px; /* 22px button: its centre = the centre of the 14px check at the 10px padding */
+  translate: 0 -50%;
+  background: var(--hover);
+  opacity: 0;
+}
+.rz-convlist__row:hover .rz-convlist__action,
+.rz-convlist__row:has(:focus-visible) .rz-convlist__action {
+  opacity: 1;
+}
+.rz-convlist__row:has(.rz-convlist__action):hover .rz-convlist__check,
+.rz-convlist__row:has(.rz-convlist__action):has(:focus-visible)
+  .rz-convlist__check {
+  opacity: 0;
+}
+.rz-convlist__action.rz-link {
+  right: 10px;
+  padding-left: 6px;
+  font-size: var(--fs-meta);
+}
+.rz-convlist__empty {
+  padding: 4px 10px 0;
+  font-size: var(--fs-meta);
+  line-height: 1.5;
+  color: var(--muted);
+  text-wrap: pretty;
+}

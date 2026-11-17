@@ -1,0 +1,274 @@
+/*
+ * Rustig area css: profile
+ * Settings / profile page incl. terminal presets, font, size, line-height.
+ * Block prefix(es): rz-profile. EVERY selector in this file starts with one of them, so the import order in
+ * index.css never matters. Shared look comes from primitives.css (via src/ui/rz.tsx): never restyle an
+ * `rz-` primitive globally from here, never use a legacy class name, never write `!important`.
+ * This file has exactly one owner package; index.css already imports it.
+ *
+ * There is no prototype for this page. Values are lifted from Je bedrijf › Profiel
+ * (design_handoff_benchdesk_rustig/Je bedrijf Rustig.dc.html = D/JeBedrijf:<line>) and Nieuwe taak (D/NieuweTaak).
+ */
+
+/* ---- Tab panel: the page gap is 32px, the prototype pulls the panel 12px up (D/JeBedrijf:106) ---- */
+.rz-profile__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin-top: -12px;
+  min-width: 0;
+}
+
+/* ---- Intro row under the tabs: muted text left, at most one pill right (D/JeBedrijf:107) ---- */
+.rz-profile__intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 12px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+.rz-profile__intro > span {
+  min-width: 0;
+  text-wrap: pretty;
+}
+
+/* ---- Key/value rows that hold controls: the grid of `rz-deflist` (110px | 1fr, gap 16, radius 14,
+        D/JeBedrijf:109-112). A control row is 52px (the default row height); the key centres on the 36px
+        control line instead of sitting 3px down next to text. Plain text rows use `rz-deflist` itself. ---- */
+.rz-profile__row {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  padding: 8px 12px;
+  border-radius: var(--r-row);
+}
+.rz-profile__key {
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+.rz-profile__value {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  min-width: 0;
+  max-width: 600px;
+}
+.rz-profile__input {
+  max-width: 360px;
+}
+
+/* Check-in time: native time input, 36px / radius 12 / system font like the date input of Nieuwe taak
+   (other-pages §1.5; the legacy mono rule for date/time inputs loses to this unlayered font-family) */
+.rz-profile__time {
+  width: auto;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+  font-family: var(--font);
+  font-size: var(--fs-body);
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+.rz-profile__time:focus {
+  border-color: var(--text2);
+}
+.rz-profile__remind {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 4px;
+  font-size: var(--fs-body);
+  color: var(--text2);
+  white-space: nowrap;
+}
+/* Mouse duplicate of the checkbox (Check has no children slot yet, see promote note): never a text selection */
+.rz-profile__remind-text {
+  cursor: pointer;
+  user-select: none;
+}
+
+/* ---- Section label with a status on the right. The status is a SIBLING of the h2 (not SectionLabel's
+        `right` slot), so the heading's accessible name is only its own text. Looks like rz-label--split. ---- */
+.rz-profile__labelrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+.rz-profile__label-right {
+  flex: none;
+  padding-right: 12px;
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* ---- Conversation display: radio cards with a live sample of the real xterm palette ---- */
+.rz-profile__note {
+  margin: 0;
+  padding: 0 12px;
+  max-width: 624px;
+  font-size: var(--fs-meta);
+  line-height: 1.5;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+.rz-profile__presets {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 6px;
+}
+.rz-profile__preset {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding: 8px 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  text-align: left;
+  color: var(--text);
+}
+.rz-profile__preset:hover {
+  background: var(--row);
+}
+/* Selection = --text2 border; green stays on the radio (D/NieuweTaak:51-54) */
+.rz-profile__preset[aria-checked="true"] {
+  border-color: var(--text2);
+}
+/* Colours, font, size and line-height arrive inline from terminalTheme() + the profile: a real preview. */
+.rz-profile__sample {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  min-height: 76px;
+  padding: 11px 12px;
+  overflow: hidden;
+  border: 1px solid var(--term-line);
+  border-radius: 8px;
+  background: var(--rz-profile-term-bg, var(--term-bg));
+  color: var(--rz-profile-term-fg, var(--term-fg));
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.rz-profile__sample-prompt {
+  color: var(--rz-profile-term-prompt, var(--term-muted));
+}
+.rz-profile__sample-ok {
+  color: var(--rz-profile-term-ok, var(--term-muted));
+}
+.rz-profile__preset-foot {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 0 6px;
+}
+.rz-profile__preset-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.rz-profile__preset-name {
+  font-size: var(--fs-body);
+  font-weight: 500;
+}
+.rz-profile__preset-sub {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+}
+.rz-profile__tuning {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.8fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+  padding: 10px 12px 4px;
+}
+.rz-profile__tuning-chip {
+  align-self: flex-start;
+  max-width: 100%;
+}
+.rz-profile__range-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.rz-profile__range-top output {
+  font-variant-numeric: tabular-nums;
+  color: var(--text2);
+}
+.rz-profile__range {
+  width: 100%;
+  height: 30px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  accent-color: var(--text2); /* green is for actions only */
+  cursor: pointer;
+}
+.rz-profile__range:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--text) 40%, transparent);
+  outline-offset: 2px;
+}
+
+/* ---- Rows of "Meer", Omgeving and Opslag ---- */
+.rz-profile__row-icon {
+  color: var(--muted);
+}
+.rz-profile__path {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--mono);
+  color: var(--text2); /* D/JeBedrijf:115 */
+}
+.rz-profile__path--quiet {
+  font-size: var(--fs-col);
+  color: var(--muted);
+}
+.rz-profile__path--end {
+  max-width: 280px;
+}
+.rz-profile__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 12px;
+}
+
+/* Preset cards: one column below 1050px, the rule the old page had (pro.css:2714-2735) */
+@media (max-width: 1050px) {
+  .rz-profile__presets {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 720px) {
+  .rz-profile__tuning {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .rz-profile__path--end {
+    max-width: 160px;
+  }
+}

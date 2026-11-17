@@ -1,0 +1,136 @@
+/*
+ * Rustig area css: launcher
+ * Launcher / Hervatten modal.
+ * Block prefix(es): rz-launcher. EVERY selector in this file starts with one of them, so the import order in
+ * index.css never matters. Shared look comes from primitives.css (via src/ui/rz.tsx): never restyle an
+ * `rz-` primitive globally from here, never use a legacy class name, never write `!important`.
+ * This file has exactly one owner package; index.css already imports it.
+ *
+ * Not in the design (README "Niet in scope: Hervatten-modal"): built from step 2 of D/NieuweTaak (lines 47-68).
+ */
+.rz-launcher__body {
+  gap: 18px; /* D/NieuweTaak:47 */
+}
+.rz-launcher__task {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, 0.45fr);
+  gap: 12px;
+}
+.rz-launcher__task > :only-child {
+  grid-column: 1 / -1;
+}
+@media (max-width: 620px) {
+  .rz-launcher__task {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Choice rows: `.rz-choice` gives the grid, padding, radius 14 and border (D/NieuweTaak:51-54) ---- */
+.rz-launcher__choices {
+  display: flex;
+  flex-direction: column;
+  gap: 6px; /* D/NieuweTaak:49 */
+}
+.rz-launcher__choice {
+  color: var(--text);
+}
+/* Selected look (aria-pressed), disabled hover and the radio glyph come from `.rz-choice` in primitives.css. */
+.rz-launcher__choice-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  line-height: 1.3; /* same as the wizard's step 2: keeps the row near the designed 52px */
+}
+.rz-launcher__choice-name {
+  font-size: var(--fs-body);
+  font-weight: 500;
+}
+.rz-launcher__choice-desc {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* ---- Account block: `.rz-inset` gives --side, radius 14, padding 12/14, gap 10 (D/NieuweTaak:59-60) ---- */
+.rz-launcher__label {
+  font-size: var(--fs-meta);
+  color: var(--muted);
+  flex: none;
+}
+.rz-launcher__account-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.rz-launcher__account-pick {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+}
+.rz-launcher__select {
+  max-width: 100%; /* the 150px of `.rz-chip--sm` is the Accounts company chip; an account label needs more */
+}
+.rz-launcher__select[data-locked],
+.rz-launcher__select[data-locked]:hover {
+  background: var(--bg);
+  cursor: default;
+}
+.rz-launcher__select[data-locked] select {
+  cursor: default;
+}
+.rz-launcher__fallback {
+  margin: 0;
+  font-size: var(--fs-meta);
+  color: var(--warn);
+  text-wrap: pretty;
+}
+
+/* ---- Werkmap + "Meegeven bij start" (D/NieuweTaak:67, D/JeBedrijf:115) ---- */
+.rz-launcher__context {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+.rz-launcher__workdir {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+.rz-launcher__path {
+  font-family: var(--mono);
+  font-size: var(--fs-meta);
+  color: var(--text2);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rz-launcher__given-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.rz-launcher__chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+/* A given that cannot be switched here: the "on" look of the toggle chip, without being a button. */
+.rz-launcher__given,
+.rz-launcher__given:hover {
+  background: var(--hover);
+  border-color: transparent;
+  color: var(--text);
+  cursor: default;
+}
+.rz-launcher__given svg {
+  opacity: 1;
+}

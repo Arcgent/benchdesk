@@ -1,0 +1,91 @@
+/*
+ * Rustig area css: usage
+ * Usage meters: row-stack + compact variants (single owner: accounts package).
+ * Block prefix(es): rz-usage. EVERY selector in this file starts with one of them, so the import order in
+ * index.css never matters. Shared look comes from primitives.css (via src/ui/rz.tsx): never restyle an
+ * `rz-` primitive globally from here, never use a legacy class name, never write `!important`.
+ * This file has exactly one owner package; index.css already imports it.
+ *
+ * Markup (src/ui/Usage.tsx): .rz-usage[--compact] › .rz-usage__windows › .rz-meter.rz-meter--usage.rz-usage__window
+ * [data-tone][data-stale] › .rz-meter__top.rz-usage__top (› __label, .rz-meter__value.rz-usage__value › __old),
+ * Bar (progressbar, width = what is LEFT), __note · then __note lines (blocked / stale) or one __message.
+ */
+
+/* ---- Row stack: the "Ruimte over" cell of Accounts (D/Accounts:74-79) ---- */
+.rz-usage {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.rz-usage__windows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.rz-usage__window {
+  min-width: 0;
+}
+/* The prototype runs on line-height normal; at the app's 1.5 two meters would push the 60px row to 71px. */
+.rz-usage .rz-usage__top {
+  flex-wrap: wrap;
+  row-gap: 0;
+  line-height: 1.2;
+}
+.rz-usage__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* A value that does not fit next to its label ("12% over (laatste meting)") drops to its own line, still right. */
+.rz-usage__value {
+  margin-left: auto;
+  white-space: nowrap;
+}
+.rz-usage__old {
+  font-weight: 400;
+  color: var(--muted);
+}
+.rz-usage__window[data-stale] .rz-bar > i {
+  opacity: 0.45;
+}
+.rz-usage__note {
+  margin: 0;
+  font-size: var(--fs-col);
+  line-height: 1.4;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+.rz-usage__note[data-tone] {
+  color: var(--rz-tone);
+}
+/* "Log in om gebruik te zien", loading, provider message (D/Accounts:78) */
+.rz-usage__message {
+  margin: 0;
+  font-size: var(--fs-meta);
+  line-height: 1.45;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* ---- Compact: account block of the task wizard / launcher (D/NieuweTaak:61-63). No surface of its own. ---- */
+.rz-usage--compact {
+  gap: 8px;
+}
+.rz-usage--compact .rz-usage__windows {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+  gap: 14px;
+}
+.rz-usage--compact .rz-usage__window {
+  gap: 5px;
+}
+.rz-usage--compact .rz-usage__label {
+  color: var(--text2);
+}
+.rz-usage--compact .rz-usage__value {
+  font-weight: 400;
+  color: var(--muted);
+}

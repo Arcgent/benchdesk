@@ -1,0 +1,4 @@
+BenchdeskCore/.build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
